@@ -1,4 +1,11 @@
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 .wrapper {
+    margin: auto;
     position: relative;
     width: 420px;
     height: 450px;
