@@ -1,24 +1,14 @@
 import './App.css'
-import Header from './components/Header/Header.jsx'
+import Routing from './routing/Routing.jsx';
 import { Outlet, Link } from 'react-router-dom';
+import Homepage from './components/Page/Homepage.jsx';
 
 const App = () => {
 
   return (
-    <div className="app-container">
-      <div className='header-container'>
-        <Header />
-      </div>
-      <div className='body-container'>
-        
-      </div>
-      <div>
-        test link
-      </div>
-      <div>
-
-      </div>
-    </div>
+      <Routing>
+      <Homepage/>
+      </Routing>
   );
 }
 
