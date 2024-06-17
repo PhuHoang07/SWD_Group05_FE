@@ -14,9 +14,9 @@ const LayoutMain = () => {
       <Content>
         <Outlet />
       </Content>
-      <Footer>
+      <div >
         <FooterLayout />
-      </Footer>
+      </div>
     </Layout>
   );
 };
