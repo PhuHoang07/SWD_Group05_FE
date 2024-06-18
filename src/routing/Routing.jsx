@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import LayoutMain from "../components/Header/Layout";
-import Homepage from "../components/Page/Homepage";
-import Login from "../components/Page/Login";
-
+import Homepage from "../Page/Homepage/Homepage";
+import Login from "../Page/LoginPage/Login";
+import AdminPage from "../Page/Adminpage/Admin";
 
 function Routing() {
   return (
@@ -11,8 +11,8 @@ function Routing() {
         <Route index element={<Homepage />} />       
       </Route>
       <Route path="/login" element={<Login />} />
+      <Route path="/admin" element={<AdminPage />} />
     </Routes>
-    
   );
 }
 
