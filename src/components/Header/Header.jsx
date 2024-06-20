@@ -81,7 +81,7 @@ const headerStyle = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: '#001529', // Background color, adjust as needed
+    background: '#001529',
     padding: '0 20px'
 };
 

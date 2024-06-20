@@ -10,6 +10,7 @@ import {
 const footerStyle = {
   backgroundColor: "#001529",
   color: "white",
+  marginTop: "30px",
   // padding: "20px",
   width: "100%",
   //position: "fixed",
@@ -27,10 +28,8 @@ export default function FooterLayout() {
           <div style={columnStyle}>
             <h3 style={{ color: "white" }}>GIỚI THIỆU</h3>
             <p>
-              <strong>Racket Rise</strong> cung cấp các tiện ích thông minh giúp
-              cho bạn tìm sân cầu lông một cách hiệu quả nhất. Với hệ thống đặt
-              sân trực tuyến 24/7 bạn có thể dễ dàng tìm kiếm và đặt sân cầu
-              lông mọi lúc mọi nơi.
+              <strong>FU GOODSEXCHANGE</strong> We are a team of dedicated individuals committed to providing quality educational resources and tools for students. 
+              Our mission is to make learning accessible and enjoyable for everyone.
               <br />
               <Link style={{ color: "white", textDecoration: "underline" }} to="/aboutUs">
                 Về chúng tôi
@@ -66,7 +65,7 @@ export default function FooterLayout() {
         <Col className="gutter-row" span={7}>
           <div style={columnStyle}>
             <h3 style={{ color: "white" }}>THÔNG TIN VÀ LIÊN LẠC</h3>
-            <p>Tên công ty: Racket Rise</p>
+            <p>Tên công ty: FU GOODSEXCHANGE</p>
             <p>Email: ducnxse171688@fpt.edu.vn</p>
             <p>
               Địa chỉ: Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ
