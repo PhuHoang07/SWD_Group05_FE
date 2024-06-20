@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import { loginUser } from '../../Services/loginApi';
@@ -86,7 +86,7 @@ const Login = () => {
                         </div>
                         <div className='remember-forgot'>
                             <label><input type='checkbox' />Remember me</label>
-                            <a href='#'>Forgot Password?</a>
+                            <Link to='/forgotpassword'>Forgot Password?</Link>
                         </div>
                         {error && <p className='error'>{error}</p>}
                         <button type='submit'>Login</button>
