@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { Container, Typography, Card, CardMedia, CardContent, Button, Box, Grid, Paper, Avatar } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -151,6 +151,11 @@ const ProductDetails = () => {
                             color="info"
                             startIcon={<ChatIcon />}
                             sx={{ mt: 1, width: '100%' }}
+                            component={Link}
+                            to={{
+                                pathname: "/user-chat",
+                                state: { product: card }
+                            }}
                         >
                             Chat với người bán
                         </Button>

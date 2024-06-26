@@ -12,7 +12,10 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@material-tailwind/react": "^2.1.9",
+    "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.20",
+    "@tinymce/tinymce-react": "^5.1.1",
     "antd": "^5.18.1",
     "axios": "^1.7.2",
     "bootstrap": "5.2.0",
