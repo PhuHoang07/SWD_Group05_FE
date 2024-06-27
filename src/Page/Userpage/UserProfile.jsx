@@ -1,0 +1,69 @@
+import React from 'react';
+import { Container, Box, Avatar, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from 'react-router-dom';
+
+const blogs = [
+    { id: 1, thumbnail: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png', title: 'React Introduction', category: 'reactjs', price: '$10.00', date: 'Jul 25, 2023' },
+    { id: 2, thumbnail: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png', title: 'React Introduction', category: 'reactjs', price: '$10.00', date: 'Jul 25, 2023' },
+    { id: 3, thumbnail: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png', title: 'React Introduction', category: 'reactjs', price: '$10.00', date: 'Jul 25, 2023' },
+    { id: 4, thumbnail: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png', title: 'React Introduction', category: 'reactjs', price: '$10.00', date: 'Jul 25, 2023' },
+    { id: 5, thumbnail: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png', title: 'React Introduction', category: 'reactjs', price: '$10.00', date: 'Jul 25, 2023' },
+];
+
+
+
+const UserProfile = () => {
+    const navigate = useNavigate();
+    return (
+        <Container maxWidth="lg" sx={{ mt: 4, bgcolor: '#f0f0f0', color: '#333', borderRadius: 1, p: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+                <Avatar alt="Kamal Nayan Upadhyay" src="/path/to/avatar.jpg" sx={{ width: 80, height: 80, mr: 2 }} />
+                <Box>
+                    <Typography variant="h5" fontWeight="bold">Nguyen Xuan Duc</Typography>
+                    <Typography>Software Developer</Typography>
+                    <Typography>ducnxse171688@fpt.edu.vn</Typography>
+                    <Typography>Total Blogs : 1</Typography>
+                </Box>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
+                <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => navigate('/create-post')}>Đăng bài</Button>
+                <Button variant="contained" color="secondary">Edit Profile</Button>
+            </Box>
+            <TableContainer component={Paper} sx={{ bgcolor: '#ffffff', color: '#333' }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>S.No</TableCell>
+                            <TableCell>Image</TableCell>
+                            <TableCell>Title</TableCell>
+                            <TableCell>Category</TableCell>
+                            <TableCell>Price</TableCell>
+                            <TableCell>Date</TableCell>
+                            <TableCell>Action</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {blogs.map((blog, index) => (
+                            <TableRow key={blog.id}>
+                                <TableCell>{index + 1}</TableCell>
+                                <TableCell><img src={blog.thumbnail} alt={blog.title} width="50" /></TableCell>
+                                <TableCell>{blog.title}</TableCell>
+                                <TableCell>{blog.category}</TableCell>
+                                <TableCell>{blog.price}</TableCell>
+                                <TableCell>{blog.date}</TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="error" startIcon={<DeleteIcon />}>
+                                        Delete
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Container>
+    );
+};
+
+export default UserProfile;
