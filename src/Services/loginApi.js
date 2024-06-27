@@ -13,7 +13,8 @@ export const loginUser = async (email, password) => {
             const userInfo = responseData.userInfo;
             const token = responseData.token;
             localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(userInfo)); // Store user info
+            localStorage.setItem("user", JSON.stringify(userInfo));
+            localStorage.setItem("loginSuccess", "true"); 
             return userInfo;
         } else {
             throw new Error(responseData.message || "Login failed");

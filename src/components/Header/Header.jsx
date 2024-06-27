@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Layout, Menu, Input, Button, Dropdown } from 'antd';
+import { Layout, Menu, Input, Button, Dropdown, Avatar } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { DownOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from 'react-toastify';
@@ -34,10 +34,23 @@ const AppHeader = () => {
     };
 
     useEffect(() => {
-        if (user && user.role) {
+        const loginSuccess = localStorage.getItem('loginSuccess');
+        console.log(user, user?.role, loginSuccess); // Added optional chaining for safety
+        if (user && user.role && loginSuccess === "true") {
             toast.success("Đăng nhập thành công!");
+            setTimeout(() => {
+                localStorage.removeItem('loginSuccess'); // Delay the removal to ensure toast is shown
+            }, 100); // Adjust delay as needed
         }
     }, [user]);
+
+    const userMenu = (
+        <Menu>
+            <Menu.Item key="1" onClick={handleLogout}>
+                Log Out
+            </Menu.Item>
+        </Menu>
+    );
 
     return (
         <Header style={headerStyle}>
@@ -63,9 +76,12 @@ const AppHeader = () => {
             </Menu>
             <div>
                 {user && user.role ? (
-                    <Button type="primary" style={logoutButtonStyle} onClick={handleLogout}>
-                        Log Out
-                    </Button>
+                    <Dropdown overlay={userMenu}>
+                        <a onClick={e => e.preventDefault()} style={dropdownLinkStyle}>
+                            <Avatar src="user-profile-image-url" style={{ marginRight: '10px' }} />
+                            {user.fullname} <DownOutlined />
+                        </a>
+                    </Dropdown>
                 ) : (
                     <Button type="primary" style={loginButtonStyle}>
                         <Link to="/login" style={linkStyle}>Đăng nhập</Link>

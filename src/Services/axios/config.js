@@ -7,23 +7,14 @@ const axiosClient = axios.create({
   },
 });
 
-
-// Add a request interceptor
 axiosClient.interceptors.request.use(
   function (config) {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       config.headers.Accept = 'application/json';
-
-      // Kiểm tra loại dữ liệu bạn đang gửi
-      if (config.data instanceof FormData) {
-        // Nếu dữ liệu là FormData (multipart/form-data), đặt Content-Type tương ứng
-        config.headers['Content-Type'] = 'multipart/form-data';
-      } else {
-        // Nếu không phải FormData, đặt Content-Type là application/json
-        config.headers['Content-Type'] = 'application/json';
-      }
+    } else {
+      console.warn('No token found in localStorage.');
     }
     return config;
   },
@@ -32,12 +23,12 @@ axiosClient.interceptors.request.use(
   }
 );
 
-// Add a response interceptor
 axiosClient.interceptors.response.use(
   function (response) {
     return response;
   },
   function (error) {
+    console.error('Request failed with status code', error.response.status);
     return Promise.reject(error);
   }
 );

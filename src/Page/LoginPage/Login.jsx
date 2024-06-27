@@ -32,7 +32,7 @@ const Login = () => {
             const user = result;
 
             if (user.role === 'Admin') {
-                navigate('/'); // Redirect to dashboard for admin
+                navigate('/Admin'); // Redirect to dashboard for admin
             } else if (user.role === 'User') {
                 navigate('/'); // Redirect to homepage for user
             }
