@@ -10,6 +10,9 @@ import ProductDetails from '../Page/ProductDetails/ProductDetail';
 import ManageCoinPackages from '../Page/Adminpage/ManageCoinPackages';
 import ManageAccounts from '../Page/Adminpage/ManageAccounts';
 import ManageCategories from '../Page/Adminpage/ManageCategories';
+import UserChat from "../Page/Userpage/UserChat";
+import UserProfile from "../Page/Userpage/UserProfile";
+import CreatePost from "../Page/ProductDetails/CreatePost";
 
 function Routing() {
   return (
@@ -17,6 +20,9 @@ function Routing() {
       <Route path="/" element={<LayoutMain />}>
         <Route index element={<Homepage />} />
         <Route path="/product-details/:id" element={<ProductDetails />} />
+        <Route path="/user-chat" element={<UserChat />} />
+        <Route path="/user-profile" element={<UserProfile />} />
+        <Route path="/create-post" element={<CreatePost />} />
         <Route path="/user-chat" element={<UserChat />} />
         <Route path="/user-profile" element={<UserProfile />} />
         <Route path="/create-post" element={<CreatePost />} />
