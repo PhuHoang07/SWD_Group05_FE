@@ -10,16 +10,6 @@ import ProductDetails from '../Page/ProductDetails/ProductDetail';
 import ManageCoinPackages from '../Page/Adminpage/ManageCoinPackages';
 import ManageAccounts from '../Page/Adminpage/ManageAccounts';
 import ManageCategories from '../Page/Adminpage/ManageCategories';
-import { Routes, Route } from "react-router-dom";
-import LayoutMain from "../components/Header/Layout";
-import Homepage from "../Page/Homepage/Homepage";
-import Login from "../Page/LoginPage/Login";
-import AdminPage from "../Page/Adminpage/Admin";
-import ForgotPassword from "../Page/LoginPage/ForgotPass";
-import ProductDetails from "../Page/ProductDetails/ProductDetail";
-import UserChat from "../Page/Userpage/UserChat";
-import UserProfile from "../Page/Userpage/UserProfile";
-import CreatePost from "../Page/ProductDetails/CreatePost";
 
 function Routing() {
   return (
