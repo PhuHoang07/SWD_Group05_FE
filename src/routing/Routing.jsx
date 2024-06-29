@@ -13,6 +13,7 @@ import ManageCategories from '../Page/Adminpage/ManageCategories';
 import UserChat from "../Page/Userpage/UserChat";
 import UserProfile from "../Page/Userpage/UserProfile";
 import CreatePost from "../Page/ProductDetails/CreatePost";
+import PostModePackage from '../Page/Userpage/PostModePackage';
 
 function Routing() {
   return (
@@ -26,6 +27,7 @@ function Routing() {
         <Route path="/user-chat" element={<UserChat />} />
         <Route path="/user-profile" element={<UserProfile />} />
         <Route path="/create-post" element={<CreatePost />} />
+        <Route path='/package-postmode' element={<PostModePackage />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/admin" element={<Admin />}>
