@@ -68,7 +68,7 @@ const Homepage = () => {
     },
     {
       id: 6,
-      imageUrl: 'https://scontent.fsgn21-1.fna.fbcdn.net/v/t39.30808-6/362240187_3718743951695208_3252985261038759718_n.jpg?stp=cp6_dst-jpg&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=rRtG9spnZLcQ7kNvgH6DeUl&_nc_ht=scontent.fsgn21-1.fna&oh=00_AYCXFDf2y_ieCp3-eVmduXQxkBWP0UCFv0B9GQcVUY4d8A&oe=6678DEB9',
+      imageUrl: 'https://cf.shopee.vn/file/vn-11134201-23020-ju297ru31snvf7',
       title: 'Đồng phục võ FPT',
       description: 'Mình có bộ đồ võ size 160 , bạn nào cần thì inb mình cho nhé.',
       price: '$10,000',
