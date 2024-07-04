@@ -46,7 +46,10 @@ const AppHeader = () => {
 
     const userMenu = (
         <Menu>
-            <Menu.Item key="1" onClick={handleLogout}>
+            <Menu.Item key="1">
+                <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Trang ca nhan</Link>
+            </Menu.Item>
+            <Menu.Item key="2" onClick={handleLogout}>
                 Log Out
             </Menu.Item>
         </Menu>

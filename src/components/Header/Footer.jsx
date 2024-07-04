@@ -13,7 +13,6 @@ const footerStyle = {
   marginTop: "30px",
   // padding: "20px",
   width: "100%",
-  // position: "fixed",
   bottom: 0,
   left: 0,
   zIndex: 1000,
