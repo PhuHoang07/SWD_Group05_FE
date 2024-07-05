@@ -32,7 +32,7 @@ function Routing() {
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute isAdminRoute={true} />}>
         <Route path="/admin" element={<Admin />}>
           <Route path="manage-coin-packages" element={<ManageCoinPackages />} />
           <Route path="manage-accounts" element={<ManageAccounts />} />
