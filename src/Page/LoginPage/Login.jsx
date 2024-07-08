@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
@@ -13,6 +13,19 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (token && user) {
+            if (user.role === 'Admin') {
+                navigate('/Admin');
+            } else {
+                navigate('/');
+            }
+        }
+    }, [navigate]);
+
     const toggleActive = () => {
         setIsLoginActive(!isLoginActive);
         setFormData({ email: '', password: '', fullname: '', phoneNumber: '' });
@@ -26,15 +39,14 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(''); // Reset error message
+        setError(''); 
         try {
             const result = await loginUser(formData.email, formData.password);
             const user = result;
-
             if (user.role === 'Admin') {
-                navigate('/Admin'); // Redirect to dashboard for admin
-            } else if (user.role === 'User') {
-                navigate('/'); // Redirect to homepage for user
+                navigate('/Admin'); 
+            } else {
+                navigate('/'); 
             }
         } catch (error) {
             setError(error.message);
@@ -43,11 +55,11 @@ const Login = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setError(''); // Reset error message
+        setError(''); 
         try {
             const result = await registerUser(formData.fullname, formData.email, formData.phoneNumber);
             toast.success("Đăng kí thành công!");
-            toggleActive(); // Switch back to login form after successful registration
+            toggleActive();
         } catch (error) {
             setError(error.message);
             toast.error("Đăng kí thất bại!");
@@ -88,7 +100,8 @@ const Login = () => {
                             <label><input type='checkbox' />Remember me</label>
                             <Link to='/forgotpassword'>Forgot Password?</Link>
                         </div>
-                        {error && <p className='error'>{error}</p>}
+                        {error && <p className='error'><strong>{error}</strong></p>}
+
                         <button type='submit'>Login</button>
                         <div className='register-link'>
                             <p>Don't have an account? <a href='#' onClick={toggleActive}>Register</a></p>

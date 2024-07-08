@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, message } from 'antd';
-import { createCategory, getAllCategory } from '../../Services/categoryApi';
+import { Table, Button, Modal, Form, Input, message, Popconfirm, Row, Col } from 'antd';
+import { createCategory, getAllCategory, deleteCategory, updateCategory } from '../../Services/categoryApi';
 
 const ManageCategories = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [form] = Form.useForm();
   const [categories, setCategories] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Bắt đầu từ trang đầu tiên (1-based)
-  const [pageSize, setPageSize] = useState(5); // Kích thước trang mặc định
-  const [hasMoreData, setHasMoreData] = useState(true); // Trạng thái để kiểm tra có dữ liệu để phân trang hay không
+  const [currentCategoryId, setCurrentCategoryId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [pageSize, setPageSize] = useState(5); 
+  const [hasMoreData, setHasMoreData] = useState(true); 
+  const [searchTerm, setSearchTerm] = useState(''); 
 
   useEffect(() => {
     fetchCategories();
-  }, [currentPage, pageSize]); // Fetch danh sách category khi currentPage hoặc pageSize thay đổi
+  }, [currentPage, pageSize, searchTerm]); 
 
   const fetchCategories = async () => {
     try {
-      const categoriesData = await getAllCategory(currentPage, pageSize); // Truyền pageIndex (0-based)
+      const categoriesData = await getAllCategory(currentPage, pageSize, searchTerm); 
       if (categoriesData.length > 0) {
         setCategories(categoriesData);
         setHasMoreData(true);
@@ -29,32 +32,42 @@ const ManageCategories = () => {
     }
   };
 
-  const showModal = () => {
+  const showModal = (category = null) => {
+    if (category) {
+      form.setFieldsValue({ name: category.name });
+      setCurrentCategoryId(category.id);
+      setIsEditMode(true);
+    } else {
+      form.resetFields();
+      setCurrentCategoryId(null);
+      setIsEditMode(false);
+    }
     setIsModalVisible(true);
   };
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      console.log('Form values:', values);
 
-      const newCategory = await createCategory(values.name);
-      message.success('Category created successfully!');
+      if (isEditMode) {
+        await updateCategory(currentCategoryId, values.name);
+        message.success('Category updated successfully!');
+      } else {
+        await createCategory(values.name);
+        message.success('Category created successfully!');
+      }
       setIsModalVisible(false);
       form.resetFields();
-
-      // Sau khi thêm mới thành công, cập nhật lại danh sách danh mục
       fetchCategories();
     } catch (error) {
-      console.error('Error:', error);
       if (error.response && error.response.status === 401) {
         message.error('Unauthorized! Please log in.');
       } else if (error.response && error.response.status === 403) {
-        message.error('Forbidden! You do not have permission to create a category.');
+        message.error('Forbidden! You do not have permission to create or update a category.');
       } else if (error.response) {
-        message.error(`Failed to create category: ${error.response.data.message}`);
+        message.error(`Failed to ${isEditMode ? 'update' : 'create'} category: ${error.response.data.message}`);
       } else {
-        message.error('Failed to create category!');
+        message.error(`Failed to ${isEditMode ? 'update' : 'create'} category!`);
       }
     }
   };
@@ -64,21 +77,73 @@ const ManageCategories = () => {
     form.resetFields();
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteCategory(id);
+      message.success('Category deleted successfully!');
+      fetchCategories();
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+      message.error('Failed to delete category!');
+    }
+  };
+
   const handleChangePage = (page) => {
-    setCurrentPage(page); // Chuyển đổi về pageIndex (1-based)
+    setCurrentPage(page); 
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1); 
+    fetchCategories();
   };
 
   const columns = [
     { title: 'Category Name', dataIndex: 'name', key: 'name' },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <>
+          <Button type="link" onClick={() => showModal(record)}>
+            Edit
+          </Button>
+          <Popconfirm
+            title="Are you sure to delete this category?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link" danger>
+              Delete
+            </Button>
+          </Popconfirm>
+        </>
+      ),
+    },
   ];
 
   return (
     <div>
-      <Button type="primary" onClick={showModal} style={{ marginBottom: 16 }}>
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col>
+          <Input
+            placeholder="Search categories"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Col>
+              <Button type="primary" onClick={() => showModal()} style={{ marginBottom: 16 }}>
         Add Category
       </Button>
+      </Row>
+
       <Table columns={columns} dataSource={categories} pagination={false} />
-      <Modal title="Add Category" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+      <Modal
+        title={isEditMode ? 'Edit Category' : 'Add Category'}
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
@@ -91,7 +156,7 @@ const ManageCategories = () => {
       </Modal>
       <div style={{ marginTop: 16, textAlign: 'right' }}>
         <Button
-          disabled={currentPage === 1} // Vô hiệu hóa nút Back khi ở trang đầu tiên
+          disabled={currentPage === 1} 
           onClick={() => handleChangePage(currentPage - 1)}
           style={{ marginRight: 8 }}
         >

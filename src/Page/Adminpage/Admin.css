@@ -77,7 +77,16 @@
     text-decoration: none;
     display: block;
 }
+.admin-menu-item a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    transition: none;
+}
 
+.admin-menu-item a:hover {
+    text-decoration: none;
+}
 @media (max-width: 768px) {
     .admin-logo span {
         display: none;

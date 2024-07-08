@@ -16,19 +16,21 @@ import PostModePackage from '../Page/Userpage/PostModePackage';
 import EditProfile from '../Page/Userpage/EditProfile';
 import Page404 from '../Page/LoginPage/404page';
 import ProtectedRoute from './ProtectedRoute';
+import ManageCampus from '../Page/Adminpage/ManageCampus';
+import ManagePostMode from '../Page/Adminpage/ManagePostMode';
 
 function Routing() {
   return (
     <Routes>
       <Route path="/" element={<LayoutMain />}>
         <Route index element={<Homepage />} />
-        <Route path="/product-details/:id" element={<ProductDetails />} />
+        <Route path="product-details/:id" element={<ProductDetails />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/user-chat" element={<UserChat />} />
-          <Route path="/user-profile" element={<UserProfile />} />
-          <Route path="/create-post" element={<CreatePost />} />
-          <Route path='/package-postmode' element={<PostModePackage />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="user-chat" element={<UserChat />} />
+          <Route path="user-profile" element={<UserProfile />} />
+          <Route path="create-post" element={<CreatePost />} />
+          <Route path="package-postmode" element={<PostModePackage />} />
+          <Route path="edit-profile" element={<EditProfile />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
@@ -36,7 +38,9 @@ function Routing() {
         <Route path="/admin" element={<Admin />}>
           <Route path="manage-coin-packages" element={<ManageCoinPackages />} />
           <Route path="manage-accounts" element={<ManageAccounts />} />
+          <Route path="manage-campus" element={<ManageCampus />} />
           <Route path="manage-categories" element={<ManageCategories />} />
+          <Route path="manage-post-mode" element={<ManagePostMode />} />
         </Route>
       </Route>
       <Route path="/forgotpassword" element={<ForgotPassword />} />

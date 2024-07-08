@@ -1,8 +1,9 @@
 import { Box, Container, Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Radio, Button } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { getAllCoinPackActive } from '../../Services/coinPackageApi';
 
 const sliderSettings = {
   dots: true,
@@ -20,17 +21,26 @@ const sliderImages = [
   'https://design.vnpay.vn/web/vi-vnpay/chinh/langding-page-ver2/media/img/banner/banner-home-ctkm.png',
 ];
 
-const options = [
-  { value: '10000', label: '10,000 VND', Xu: '20' },
-  { value: '20000', label: '20,000 VND', Xu: '40' },
-  { value: '30000', label: '30,000 VND', Xu: '60' },
-  { value: '40000', label: '40,000 VND', Xu: '80' },
-  { value: '50000', label: '50,000 VND', Xu: '100' },
-];
-
 function PostModePackage() {
-  const [amount, setAmount] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [options, setOptions] = useState([]);
   const gameAccount = 'Duc Nguyen'; // Đặt tên tài khoản mẫu, có thể thay thế bằng props nếu cần
+
+  useEffect(() => {
+    const fetchCoinPacks = async () => {
+      try {
+        const data = await getAllCoinPackActive();
+        setOptions(data.map(option => ({
+          value: option.price,
+          label: `${parseInt(option.price).toLocaleString()} VND`,
+          Xu: option.coinAmount, // Assuming 'Xu' is represented by 'coinAmount'
+        })));
+      } catch (error) {
+        console.error('Failed to fetch coin packs:', error);
+      }
+    };
+    fetchCoinPacks();
+  }, []);
 
   const handlePayment = () => {
     // Thêm logic xử lý thanh toán tại đây
@@ -38,7 +48,8 @@ function PostModePackage() {
   };
 
   const handleAmountChange = (event) => {
-    setAmount(event.target.value);
+    const selected = options.find(option => option.value === event.target.value);
+    setSelectedOption(selected);
   };
 
   return (
@@ -69,7 +80,7 @@ function PostModePackage() {
                   <TableRow key={option.value}>
                     <TableCell>
                       <Radio
-                        checked={amount === option.value}
+                        checked={selectedOption?.value === option.value}
                         onChange={handleAmountChange}
                         value={option.value}
                         name="radio-buttons"
@@ -91,10 +102,10 @@ function PostModePackage() {
           </Typography>
           <Paper elevation={3} sx={{ padding: 2, textAlign: 'left', color: 'text.secondary' }}>
             <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
-              Sản phẩm được chọn: {amount && `Xu × ${parseInt(amount, 10) / 500}`}
+              Sản phẩm được chọn: {selectedOption && `Xu × ${selectedOption.Xu}`}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
-              Giá: {amount && `${parseInt(amount, 10).toLocaleString()} VND`}
+              Giá: {selectedOption && `${parseInt(selectedOption.value, 10).toLocaleString()} VND`}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>Phương thức thanh toán: Ví VNPAY</Typography>
             <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>Tên tài khoản: {gameAccount}</Typography>
