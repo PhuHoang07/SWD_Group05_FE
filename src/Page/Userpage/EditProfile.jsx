@@ -42,10 +42,6 @@ const EditProfile = () => {
                             label="Số điện thoại"
                             defaultValue="0903764392"
                         />
-                        <TextField
-                            label="Campus"
-                            defaultValue="FPT HCM"
-                        />
                         <Button variant="contained" color="primary">
                             Lưu
                         </Button>

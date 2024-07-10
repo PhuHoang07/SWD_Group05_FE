@@ -30,6 +30,7 @@ function PostModePackage() {
     const fetchCoinPacks = async () => {
       try {
         const data = await getAllCoinPackActive();
+        console.log(data);
         setOptions(data.map(option => ({
           value: option.price,
           label: `${parseInt(option.price).toLocaleString()} VND`,

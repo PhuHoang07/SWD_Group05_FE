@@ -26,6 +26,7 @@ const Login = () => {
         }
     }, [navigate]);
 
+
     const toggleActive = () => {
         setIsLoginActive(!isLoginActive);
         setFormData({ email: '', password: '', fullname: '', phoneNumber: '' });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Box, Avatar, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
@@ -14,16 +14,29 @@ const blogs = [
 
 
 const UserProfile = () => {
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
+
+    if (!user) {
+        return <Typography>Loading...</Typography>;
+    }
+
     return (
         <Container maxWidth="lg" sx={{ mt: 4, bgcolor: '#f0f0f0', color: '#333', borderRadius: 1, p: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                <Avatar alt="Kamal Nayan Upadhyay" src="/path/to/avatar.jpg" sx={{ width: 80, height: 80, mr: 2 }} />
+                <Avatar alt={user.fullname} src={user.avatarUrl || "/path/to/default-avatar.jpg"} sx={{ width: 80, height: 80, mr: 2 }} />
                 <Box>
-                    <Typography variant="h5" fontWeight="bold">Nguyen Xuan Duc</Typography>
-                    <Typography>ducnxse171688@fpt.edu.vn</Typography>
-                    <Typography>Balance: 100000</Typography>
-                    <Typography>Total Blogs : 1</Typography>
+                    <Typography variant="h5" fontWeight="bold">{user.fullname}</Typography>
+                    <Typography>{user.email}</Typography>
+                    <Typography>Balance: {user.balance}</Typography>
+                    <Typography>Total Blogs: {blogs.length}</Typography>
                 </Box>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
@@ -67,5 +80,4 @@ const UserProfile = () => {
         </Container>
     );
 };
-
 export default UserProfile;

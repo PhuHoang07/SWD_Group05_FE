@@ -43,6 +43,7 @@ function Routing() {
           <Route path="manage-post-mode" element={<ManagePostMode />} />
         </Route>
       </Route>
+      
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/404-notfound" element={<Page404 />} />
     </Routes>
