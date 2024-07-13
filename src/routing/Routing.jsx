@@ -18,6 +18,7 @@ import Page404 from '../Page/LoginPage/404page';
 import ProtectedRoute from './ProtectedRoute';
 import ManageCampus from '../Page/Adminpage/ManageCampus';
 import ManagePostMode from '../Page/Adminpage/ManagePostMode';
+import MangePost from "../Page/Moderatorpage/ManagePost";
 
 function Routing() {
   return (
@@ -33,6 +34,7 @@ function Routing() {
           <Route path="edit-profile" element={<EditProfile />} />
         </Route>
       </Route>
+      <Route path="/mangage-post" element={<MangePost />} />
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute isAdminRoute={true} />}>
         <Route path="/admin" element={<Admin />}>
@@ -43,7 +45,6 @@ function Routing() {
           <Route path="manage-post-mode" element={<ManagePostMode />} />
         </Route>
       </Route>
-      
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/404-notfound" element={<Page404 />} />
     </Routes>
