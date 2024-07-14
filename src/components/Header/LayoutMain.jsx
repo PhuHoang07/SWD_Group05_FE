@@ -4,18 +4,20 @@ import { Layout } from 'antd';
 import FooterLayout from './Footer';
 import HeaderLayout from './Header';
 
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
 
 const LayoutMain = () => {
   return (
-    <Layout>
+    <Layout style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header>
         <HeaderLayout />
       </Header>
-      <Content>
+      <Content style={{ flex: 1 }}>
         <Outlet />
       </Content>
-      <FooterLayout />
+      <Footer style={{ backgroundColor: '#f1f1f1', padding: '1em 0', textAlign: 'center' }}>
+        <FooterLayout />
+      </Footer>
     </Layout>
   );
 };

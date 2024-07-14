@@ -40,7 +40,7 @@ function PostModePackage() {
         console.error('Failed to fetch coin packs:', error);
       }
     };
-    fetchCoinPacks();
+    fetchCoinPacks(); 
   }, []);
 
   const handlePayment = () => {

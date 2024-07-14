@@ -65,7 +65,7 @@ export default function FooterLayout() {
           <div style={columnStyle}>
             <h3 style={{ color: "white" }}>THÔNG TIN VÀ LIÊN LẠC</h3>
             <p>Tên công ty: FU GOODSEXCHANGE</p>
-            <p>Email: ducnxse171688@fpt.edu.vn</p>
+            <p>Email: fugoodsexchangesystem@gmail.com</p>
             <p>
               Địa chỉ: Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ
               Đức, Thành phố Hồ Chí Minh, Việt Nam

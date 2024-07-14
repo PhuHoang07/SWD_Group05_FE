@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, TextField, Button, Box, Grid, IconButton, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, Grid, IconButton, MenuItem, FormControl, InputLabel, Select, Modal } from '@mui/material';
 import { Editor } from '@tinymce/tinymce-react';
 import CloseIcon from '@mui/icons-material/Close';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import storage from '../../firebase/FirebaseConfig';
 import axiosClient from '../../Services/axios/config';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePost = () => {
     const [content, setContent] = useState('');
     const [price, setPrice] = useState('');
-    const [thumbnail, setThumbnail] = useState(null);
-    const [previewImage, setPreviewImage] = useState('');
+    const [thumbnails, setThumbnails] = useState([]);
+    const [previewImages, setPreviewImages] = useState([]);
     const [campus, setCampus] = useState('');
     const [postMode, setPostMode] = useState('');
     const [campusOptions, setCampusOptions] = useState([]);
@@ -18,6 +21,9 @@ const CreatePost = () => {
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
     const [postModes, setPostModes] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchOptions = async () => {
@@ -45,18 +51,16 @@ const CreatePost = () => {
     };
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setThumbnail(file);
-            const reader = new FileReader();
-            reader.onloadend = () => setPreviewImage(reader.result);
-            reader.readAsDataURL(file);
-        }
+        const files = Array.from(e.target.files);
+        setThumbnails([...thumbnails, ...files]);
+
+        const previewUrls = files.map(file => URL.createObjectURL(file));
+        setPreviewImages([...previewImages, ...previewUrls]);
     };
 
-    const handleCancelImage = () => {
-        setThumbnail(null);
-        setPreviewImage('');
+    const handleCancelImage = (index) => {
+        setThumbnails(thumbnails.filter((_, i) => i !== index));
+        setPreviewImages(previewImages.filter((_, i) => i !== index));
     };
 
     const handleChange = (setter) => (event) => setter(event.target.value);
@@ -64,13 +68,12 @@ const CreatePost = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            let imageUrl = '';
-            if (thumbnail) {
+            const imageUrls = await Promise.all(thumbnails.map(async (thumbnail) => {
                 const storageRef = ref(storage, `images/${thumbnail.name}`);
                 await uploadBytes(storageRef, thumbnail);
-                imageUrl = await getDownloadURL(storageRef);
-            }
-    
+                return await getDownloadURL(storageRef);
+            }));
+
             const postData = {
                 title: title,
                 description: content,
@@ -78,9 +81,9 @@ const CreatePost = () => {
                 campusId: campus,
                 categoryId: category,
                 postModeId: postMode,
-                imagesUrl: [imageUrl]
+                imagesUrl: imageUrls
             };
-    
+
             // Validate postData fields
             const requiredFields = ['title', 'description', 'price', 'campusId', 'categoryId', 'postModeId', 'imagesUrl'];
             for (const field of requiredFields) {
@@ -89,18 +92,32 @@ const CreatePost = () => {
                     return;
                 }
             }
-    
+
             console.log('postData:', postData);
             const response = await axiosClient.post('/api/product-post', postData);
             console.log('Post created successfully:', response.data);
+            localStorage.setItem('postSuccess', true);
+            navigate('/user-profile');
         } catch (error) {
             console.error('Error creating post:', error.response?.data);
+            if (error.response?.data?.message.includes('You dont have enough coin')) {
+                setErrorMessage(error.response.data.message);
+                setIsModalVisible(true);
+            }
             if (error.response?.data?.errors) {
                 Object.keys(error.response.data.errors).forEach((key) => {
                     console.error(`${key}: ${error.response.data.errors[key].join(', ')}`);
                 });
             }
         }
+    };
+
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleRecharge = () => {
+        window.location.href = '/package-postmode';
     };
 
     return (
@@ -112,12 +129,12 @@ const CreatePost = () => {
             <Grid container spacing={5}>
                 <Grid item xs={12} sm={6}>
                     <Button variant="contained" component="label" fullWidth>
-                        Upload Image
-                        <input type="file" hidden onChange={handleImageChange} />
+                        Upload Images
+                        <input type="file" hidden multiple onChange={handleImageChange} />
                     </Button>
-                    {previewImage && (
-                        <Box sx={{ position: 'relative', marginTop: '20px', marginBottom: '10px' }}>
-                            <img src={previewImage} alt="preview" style={{ width: '100%' }} />
+                    {previewImages.map((previewImage, index) => (
+                        <Box key={index} sx={{ position: 'relative', marginTop: '20px', marginBottom: '10px' }}>
+                            <img src={previewImage} alt={`preview ${index}`} style={{ width: '100%' }} />
                             <IconButton
                                 sx={{
                                     position: 'absolute',
@@ -129,12 +146,12 @@ const CreatePost = () => {
                                         backgroundColor: 'background.default',
                                     },
                                 }}
-                                onClick={handleCancelImage}
+                                onClick={() => handleCancelImage(index)}
                             >
                                 <CloseIcon />
                             </IconButton>
                         </Box>
-                    )}
+                    ))}
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
@@ -190,11 +207,7 @@ const CreatePost = () => {
                             init={{
                                 height: 300,
                                 menubar: false,
-                                plugins: [
-                                    'advlist autolink lists link image charmap print preview anchor',
-                                    'searchreplace visualblocks code fullscreen',
-                                    'insertdatetime media table paste code help wordcount'
-                                ],
+                                plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
                                 toolbar: 'undo redo | formatselect | ' +
                                     'bold italic backcolor | alignleft aligncenter ' +
                                     'alignright alignjustify | bullist numlist outdent indent | ' +
@@ -211,10 +224,39 @@ const CreatePost = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <Button type="submit" variant="contained" fullWidth>Đăng bài</Button>
+                        <Button type="submit" variant="contained" color="primary">
+                            Đăng bài
+                        </Button>
                     </Box>
                 </Grid>
             </Grid>
+            <Modal open={isModalVisible} onClose={handleModalClose}>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        border: '2px solid #000',
+                        boxShadow: 24,
+                        p: 4,
+                    }}
+                >
+                    <Typography variant="h6" component="h2">
+                        {errorMessage}
+                    </Typography>
+                    <Box sx={{ mt: 2 }}>
+                        <Button variant="contained" color="primary" onClick={handleRecharge}>
+                            Nạp tiền
+                        </Button>
+                        <Button variant="contained" color="secondary" onClick={handleModalClose} sx={{ ml: 2 }}>
+                            Đóng
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
         </Container>
     );
 };
