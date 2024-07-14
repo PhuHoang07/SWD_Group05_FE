@@ -5,7 +5,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import storage from '../../firebase/FirebaseConfig';
 import axiosClient from '../../Services/axios/config';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -202,7 +201,7 @@ const CreatePost = () => {
                             </Select>
                         </FormControl>
                         <Editor
-                            initialValue="<p>Nội dung bài đăng</p>"
+                            initialValue=""
                             apiKey="5kx813tgysajmjf9o58083ym6myi30gj2kxschnfum8kpd0a"
                             init={{
                                 height: 300,
@@ -212,7 +211,14 @@ const CreatePost = () => {
                                     'bold italic backcolor | alignleft aligncenter ' +
                                     'alignright alignjustify | bullist numlist outdent indent | ' +
                                     'removeformat | help',
-                                content_css: '//www.tiny.cloud/css/codepen.min.css'
+                                content_css: '//www.tiny.cloud/css/codepen.min.css',
+                                forced_root_block: false,
+                                setup: editor => {
+                                    editor.on('change', () => {
+                                        const content = editor.getContent({ format: 'text' });
+                                        setContent(content);
+                                    });
+                                }
                             }}
                             onEditorChange={handleEditorChange}
                         />

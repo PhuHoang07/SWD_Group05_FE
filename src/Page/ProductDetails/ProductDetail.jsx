@@ -1,44 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
-import { Container, Typography, Card, CardMedia, CardContent, Button, Box, Grid, Paper, Avatar } from '@mui/material';
+import { Container, Typography, Card, CardMedia, CardContent, Button, Box, Grid, Paper, Avatar, IconButton } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ChatIcon from '@mui/icons-material/Chat';
 import ReportIcon from '@mui/icons-material/Report';
 import AlertIcon from '@mui/icons-material/Error';
-
-const similarListings = [
-    {
-        id: 1,
-        imageUrl: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png',
-        title: 'Tài Liệu SV',
-        description: 'Description of Car 1',
-        price: '$10,000',
-        features: ['Feature 1', 'Feature 2', 'Feature 3'],
-        Campus: 'Hồ Chí Minh',
-        Seller: 'Nguyễn Văn A',
-    },
-    {
-        id: 2,
-        imageUrl: 'https://lawnet.vn/uploads/image/2023/10/14/075118331.jpg',
-        title: 'Tài liệu prj',
-        description: 'Description of Car 2',
-        price: '$20,000',
-        features: ['Feature 1', 'Feature 2', 'Feature 3'],
-        Campus: 'Cần Thơ',
-        Seller: 'Trần Văn B',
-    },
-    {
-        id: 3,
-        imageUrl: 'https://nhatkyduhoc.vn/wp-content/uploads/2020/12/ta%CC%80i-lie%CC%A3%CC%82u-o%CC%82n-thi-640x358-1.png',
-        title: 'Tài Liệu SV',
-        description: 'Description of Car 1',
-        price: '$10,000',
-        features: ['Feature 1', 'Feature 2', 'Feature 3'],
-        Campus: 'Hồ Chí Minh',
-        Seller: 'Nguyễn Văn A',
-    },
-];
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import axiosClient from '../../Services/axios/config';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -46,6 +16,25 @@ const ProductDetails = () => {
     const { card } = location.state || {};
 
     const [phoneVisible, setPhoneVisible] = useState(false);
+    const [similarListings, setSimilarListings] = useState([]);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0); // Track current image index
+
+    useEffect(() => {
+        const fetchSimilarListings = async () => {
+            try {
+                const response = await axiosClient.get(`/api/product-post/${id}`);
+                if (response.data && response.data.similarListings) {
+                    setSimilarListings(response.data.similarListings);
+                } else {
+                    setSimilarListings([]);
+                }
+            } catch (error) {
+                console.error('Error fetching similar listings:', error);
+            }
+        };
+
+        fetchSimilarListings();
+    }, [id]);
 
     const handleShowPhone = () => {
         setPhoneVisible(true);
@@ -61,6 +50,18 @@ const ProductDetails = () => {
         alert('Báo cáo: Thông tin không hợp lệ.');
     };
 
+    const handleImageClick = (index) => {
+        setCurrentImageIndex(index);
+    };
+
+    const handlePreviousImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + card.imageUrls.length) % card.imageUrls.length);
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % card.imageUrls.length);
+    };
+
     if (!card) {
         return <div>Loading...</div>;
     }
@@ -69,14 +70,42 @@ const ProductDetails = () => {
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Grid container spacing={4}>
                 <Grid item xs={12} md={8}>
-                    <Card sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Card sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
                         <CardMedia
                             component="img"
-                            height="300"
-                            image={card.imageUrl}
+                            height="400"
+                            image={card.imageUrls[currentImageIndex]}
                             alt={card.title}
+                            sx={{ objectFit: 'contain' }}
                         />
                         <CardContent>
+                            <Grid container spacing={2} sx={{ marginTop: 4 }}>
+                                <Grid item xs={12}>
+                                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                                        <Typography variant="h5" gutterBottom>Ảnh khác của sản phẩm</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Box display="flex" alignItems="center" justifyContent="center">
+                                        <IconButton onClick={handlePreviousImage}>
+                                            <ArrowBackIosIcon />
+                                        </IconButton>
+                                        {card.imageUrls.map((imageUrl, index) => (
+                                            <Box key={index} sx={{ mx: 1 }}>
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={`Product Image ${index}`}
+                                                    style={{ width: 80, height: 80, cursor: 'pointer', objectFit: 'cover' }}
+                                                    onClick={() => handleImageClick(index)}
+                                                />
+                                            </Box>
+                                        ))}
+                                        <IconButton onClick={handleNextImage}>
+                                            <ArrowForwardIosIcon />
+                                        </IconButton>
+                                    </Box>
+                                </Grid>
+                            </Grid>
                             <Typography variant="h4" component="h2" gutterBottom>
                                 {card.title}
                             </Typography>
@@ -87,17 +116,17 @@ const ProductDetails = () => {
                                 {card.description}
                             </Typography>
                             <Box sx={{ mb: 2 }}>
-                                {card.features.map((feature, idx) => (
+                                {card.features && card.features.map((feature, idx) => (
                                     <Typography key={idx} variant="body2" sx={{ display: 'block' }}>
                                         - {feature}
                                     </Typography>
                                 ))}
                             </Box>
                             <Typography variant="body2" sx={{ mt: 2 }}>
-                                Campus: {card.Campus}
+                                Campus: {card.campus}
                             </Typography>
                         </CardContent>
-                        <Box sx={{ mt: 2, ml: 2, mb: 4}}>
+                        <Box sx={{ mt: 2, ml: 2, mb: 4 }}>
                             <Button
                                 variant="contained"
                                 color="warning"
@@ -126,7 +155,7 @@ const ProductDetails = () => {
                             </Grid>
                             <Grid item>
                                 <Typography variant="h6">
-                                    {card.Seller}
+                                    {card.createdBy.fullName}
                                 </Typography>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                                     <StarIcon sx={{ color: 'gold', mr: 0.5 }} />
@@ -144,7 +173,7 @@ const ProductDetails = () => {
                             sx={{ mt: 2, width: '100%' }}
                             onClick={handleShowPhone}
                         >
-                            {phoneVisible ? card.Phone : 'Bấm để hiện số'}
+                            {phoneVisible ? card.createdBy.phoneNumber : 'Bấm để hiện số'}
                         </Button>
                         <Button
                             variant="contained"
@@ -177,6 +206,7 @@ const ProductDetails = () => {
                                 height="140"
                                 image={listing.imageUrl}
                                 alt={listing.title}
+                                sx={{ objectFit: 'contain' }}
                             />
                             <CardContent>
                                 <Typography gutterBottom variant="h6" component="div">
@@ -186,7 +216,7 @@ const ProductDetails = () => {
                                     {listing.price}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
-                                    Campus: {listing.Campus}
+                                    Campus: {listing.campus}
                                 </Typography>
                             </CardContent>
                         </Card>
