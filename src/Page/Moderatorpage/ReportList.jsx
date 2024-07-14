@@ -1,6 +1,5 @@
-// ReportList.jsx
 import React, { useState, useEffect } from 'react';
-import { Table, Input, Modal, Button } from 'antd';
+import { Table, Button, Modal, Input, message, Row, Col } from 'antd';
 import { getAllReport } from '../../Services/reportApi';
 import { getProductPostById } from '../../Services/productPostApi';
 import moment from 'moment';
@@ -8,19 +7,21 @@ import moment from 'moment';
 const ReportList = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(6);
-  const [searchDate, setSearchDate] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [productPost, setProductPost] = useState(null);
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
 
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const data = await getAllReport(searchDate, pageIndex, pageSize);
+      const data = await getAllReport();
       setReports(data);
     } catch (error) {
       console.error('Failed to fetch reports:', error);
+      message.error('Failed to fetch reports!');
     } finally {
       setLoading(false);
     }
@@ -34,14 +35,11 @@ const ReportList = () => {
       setModalVisible(true);
     } catch (error) {
       console.error('Failed to fetch product post details:', error);
+      message.error('Failed to fetch product post details!');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchReports();
-  }, [pageIndex, pageSize, searchDate]);
 
   const columns = [
     {
@@ -71,28 +69,12 @@ const ReportList = () => {
 
   return (
     <div>
-      <h1>Report List</h1>
-      <Input.Search
-        placeholder="Search by date"
-        value={searchDate}
-        onChange={(e) => setSearchDate(e.target.value)}
-        onSearch={() => setPageIndex(0)}
-        style={{ marginBottom: 16 }}
-      />
       <Table
         columns={columns}
         dataSource={reports}
         rowKey="id"
         loading={loading}
-        pagination={{
-          current: pageIndex + 1,
-          pageSize: pageSize,
-          total: reports.length,
-          onChange: (page, pageSize) => {
-            setPageIndex(page - 1);
-            setPageSize(pageSize);
-          },
-        }}
+        pagination={{ pageSize: 6 }}
       />
       <Modal
         title="Product Post Details"
