@@ -5,7 +5,7 @@ export const loginUser = async (email, password) => {
         const response = await axiosClient.post("/api/auth/login", { email, password });
         const responseData = response.data;
 
-        if (responseData) {
+        if (responseData && responseData.userInfo && responseData.token) {
             const userInfo = responseData.userInfo;
             const token = responseData.token;
             localStorage.setItem("token", token);

@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
     const [isLoginActive, setIsLoginActive] = useState(true);
-    const [formData, setFormData] = useState({ email: '', password: '', fullname: '', phoneNumber: '' });
+    const [formData, setFormData] = useState({ id : '', email: '', password: '', fullname: '', phoneNumber: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -20,8 +20,10 @@ const Login = () => {
         if (token && user) {
             if (user.role === 'Admin') {
                 navigate('/Admin');
-            } else {
+            } else if(user.role === 'User'){
                 navigate('/');
+            }else if(user.role === 'Moderator'){
+                navigate('/Moderator');
             }
         }
     }, [navigate]);
@@ -29,7 +31,7 @@ const Login = () => {
 
     const toggleActive = () => {
         setIsLoginActive(!isLoginActive);
-        setFormData({ email: '', password: '', fullname: '', phoneNumber: '' });
+        setFormData({ id : '',email: '', password: '', fullname: '', phoneNumber: '' });
         setError('');
     };
 
@@ -45,9 +47,11 @@ const Login = () => {
             const result = await loginUser(formData.email, formData.password);
             const user = result;
             if (user.role === 'Admin') {
-                navigate('/Admin'); 
-            } else {
-                navigate('/'); 
+                navigate('/Admin');
+            } else if(user.role === 'User'){
+                navigate('/');
+            }else if(user.role === 'Moderator'){
+                navigate('/Moderator');
             }
         } catch (error) {
             setError(error.message);
