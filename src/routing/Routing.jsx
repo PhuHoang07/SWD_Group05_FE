@@ -52,6 +52,7 @@ function Routing() {
           <Route path="report-list" element={<ReportList />} />
         </Route>
       </Route>
+      //Merge code
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/404-notfound" element={<Page404 />} />
     </Routes>
