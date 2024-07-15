@@ -182,11 +182,11 @@ const ProductDetails = () => {
                             sx={{ mt: 1, width: '100%' }}
                             component={Link}
                             to={{
-                                pathname: "/user-chat",
+                                pathname: "/",
                                 state: { product: card }
                             }}
                         >
-                            Chat với người bán
+                            Trao đổi với người bán
                         </Button>
                     </Paper>
                 </Grid>
