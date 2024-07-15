@@ -21,6 +21,9 @@ import ManagePostMode from '../Page/Adminpage/ManagePostMode';
 import ProductPostList from '../Page/Moderatorpage/ProductPostList';
 import ReportList from '../Page/Moderatorpage/ReportList';
 import Moderator from '../Page/Moderatorpage/Moderator';
+import BuyerHistory from '../Page/Userpage/Buyer history/BuyerHistory';
+import BuyerSuccess from '../Page/Userpage/Buyer success/BuyerSuccess';
+import PostApplyDetails from '../Page/Userpage/ListSeller/PostApplyDetails';
 
 function Routing() {
   return (
@@ -52,6 +55,9 @@ function Routing() {
           <Route path="report-list" element={<ReportList />} />
         </Route>
       </Route>
+      <Route path="/post-apply-details" element={<PostApplyDetails />} />
+      <Route path="/buyer-success" element={<BuyerSuccess />} />
+      <Route path="/buyer-history" element={<BuyerHistory />} />
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/404-notfound" element={<Page404 />} />
     </Routes>
