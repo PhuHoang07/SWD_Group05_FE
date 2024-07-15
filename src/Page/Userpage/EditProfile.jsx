@@ -1,11 +1,36 @@
 import React, { useState } from 'react';
 import { Box, TextField, Typography, Button, Tabs, Tab, Paper } from '@mui/material';
+import { changePassword } from '../../Services/accountApi';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const EditProfile = () => {
     const [tabIndex, setTabIndex] = useState(0);
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const handleTabChange = (event, newIndex) => {
         setTabIndex(newIndex);
+    };
+
+    const handlePasswordChange = async () => {
+        try {
+            if (newPassword !== confirmPassword) {
+                toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+                return;
+            }
+
+            const response = await changePassword(oldPassword, newPassword, confirmPassword);
+            toast.success(response.message);
+            // Clear password fields after successful change
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error) {
+            console.error('Error changing password:', error);
+            toast.error('Đã xảy ra lỗi khi thay đổi mật khẩu. Vui lòng thử lại sau.');
+        }
     };
 
     return (
@@ -57,18 +82,28 @@ const EditProfile = () => {
                             required
                             label="Mật khẩu hiện tại"
                             type="password"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
                         />
                         <TextField
                             required
                             label="Mật khẩu mới"
                             type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
                         />
                         <TextField
                             required
                             label="Xác nhận mật khẩu mới"
                             type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-                        <Button variant="contained" color="primary">
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handlePasswordChange}
+                        >
                             Đổi mật khẩu
                         </Button>
                     </Box>

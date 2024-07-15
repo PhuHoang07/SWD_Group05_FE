@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Avatar, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Container, Box, Avatar, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../../Services/axios/config';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Pagination from '@mui/material/Pagination';
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
+    const [pageIndex, setPageIndex] = useState(1);
+    const [status, setStatus] = useState('Waiting'); // Default status
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,44 +28,54 @@ const UserProfile = () => {
         if (storedUser) {
             fetchUserData(storedUser.id);
         }
-
-        const fetchBlogs = async () => {
-            try {
-                const response = await axiosClient.get('/api/product-post/me');
-                setBlogs(response.data);
-            } catch (error) {
-                console.error('Error fetching blogs:', error);
-            }
-        };
-
-        fetchBlogs();
     }, []);
 
     useEffect(() => {
-        const handlePostSuccess = () => {
-            const fetchBlogs = async () => {
-                try {
-                    const response = await axiosClient.get('/api/product-post/me');
-                    setBlogs(response.data);
-                } catch (error) {
-                    console.error('Error fetching blogs:', error);
-                }
-            };
+        fetchBlogs(pageIndex, status); // Fetch blogs when pageIndex or status changes
+    }, [pageIndex, status]);
 
-            fetchBlogs();
-        };
-
-        const storedSuccess = localStorage.getItem('postSuccess');
-        if (storedSuccess) {
-            toast.success('Bài đăng đã được tạo thành công!');
-            localStorage.removeItem('postSuccess');
-            handlePostSuccess();
+    const fetchBlogs = async (pageIndex, status, title = '', category = '', campus = '', orderPriceDescending = false, orderDateDescending = false) => {
+        try {
+            const response = await axiosClient.get(`/api/product-post/me`, {
+                params: {
+                    pageIndex,
+                    title,
+                    category,
+                    campus,
+                    orderPriceDescending,
+                    orderDateDescending,
+                    status,
+                },
+            });
+            setBlogs(response.data);
+        } catch (error) {
+            console.error('Error fetching blogs:', error);
         }
-    }, []);
+    };
+
+    const handleDelete = async (blogId) => {
+        try {
+            // Implement delete logic here
+            toast.success('Đã xóa bài đăng thành công!');
+            // Reload blogs after successful delete
+            fetchBlogs(pageIndex, status);
+        } catch (error) {
+            console.error('Error deleting blog:', error);
+            toast.error('Đã xảy ra lỗi khi xóa bài đăng. Vui lòng thử lại sau.');
+        }
+    };
 
     if (!user) {
         return <Typography>Loading...</Typography>;
     }
+
+    const handleChangePage = (event, value) => {
+        setPageIndex(value); // Handle page change
+    };
+
+    const handleChangeStatus = (event) => {
+        setStatus(event.target.value); // Handle status change
+    };
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, bgcolor: '#f0f0f0', color: '#333', borderRadius: 1, p: 2 }}>
@@ -78,6 +91,28 @@ const UserProfile = () => {
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
                 <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => navigate('/create-post')}>Đăng bài</Button>
                 <Button variant="contained" color="secondary" onClick={() => navigate('/edit-profile')}>Edit Profile</Button>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="status-label">Status</InputLabel>
+                    <Select
+                        labelId="status-label"
+                        id="status-select"
+                        value={status}
+                        label="Status"
+                        onChange={handleChangeStatus}
+                    >
+                        <MenuItem value="Waiting">Chờ duyệt</MenuItem>
+                        <MenuItem value="Open">Mở</MenuItem>
+                        <MenuItem value="Close">Đóng</MenuItem>
+                    </Select>
+                </FormControl>
+                <Pagination
+                    count={10} // Total pages (dummy data)
+                    page={pageIndex}
+                    onChange={handleChangePage}
+                    color="primary"
+                />
             </Box>
             <TableContainer component={Paper} sx={{ bgcolor: '#ffffff', color: '#333' }}>
                 <Table>
@@ -105,11 +140,16 @@ const UserProfile = () => {
                                     <TableCell><img src={blog.imageUrls[0]} alt={blog.title} width="50" /></TableCell>
                                     <TableCell>{blog.title}</TableCell>
                                     <TableCell>{blog.category}</TableCell>
-                                    <TableCell>{blog.price}</TableCell>
+                                    <TableCell>{blog.price} VNĐ</TableCell>
                                     <TableCell>{new Date(blog.createdDate).toLocaleDateString()}</TableCell>
                                     <TableCell>{blog.status}</TableCell>
                                     <TableCell>
-                                        <Button variant="contained" color="error" startIcon={<DeleteIcon />}>
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            startIcon={<DeleteIcon />}
+                                            onClick={() => handleDelete(blog.id)}
+                                        >
                                             Delete
                                         </Button>
                                     </TableCell>

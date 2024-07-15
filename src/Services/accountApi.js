@@ -26,3 +26,12 @@ export const deleteAccount = async (id) => {
     throw e.response ? e.response.data : new Error('An error occurred');
   }
 };
+
+export const changePassword = async (oldPassword, newPassword, confirmPassword) => {
+  try {
+    const response = await axiosClient.post(`/api/auth/password/change`, { oldPassword, newPassword, confirmPassword});
+    return response.data;
+  } catch (e) {
+    throw e.response ? e.response.data : new Error('An error occurred');
+  }
+};

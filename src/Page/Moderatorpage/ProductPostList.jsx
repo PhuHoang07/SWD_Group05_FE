@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, message, Modal } from "antd";
+import { Table, Button, message, Modal, Pagination } from "antd";
 import { getAllProductPostWaiting, approvePostMode } from '../../Services/productPostApi';
 import moment from "moment";
 
@@ -7,15 +7,17 @@ const ProductPostList = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pageIndex, setPageIndex] = useState(1); // Sử dụng pageIndex để phân trang
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    fetchPosts(pageIndex); // Gọi fetchPosts khi pageIndex thay đổi
+  }, [pageIndex]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (page) => {
     try {
-      const data = await getAllProductPostWaiting();
-      setPosts(data);
+      const data = await getAllProductPostWaiting(page); // Pass pageIndex to API call
+      console.log("Fetched posts data:", data); // Kiểm tra data từ API đã fetch đúng
+      setPosts(data); // Cập nhật dữ liệu posts từ API vào state
     } catch (error) {
       console.error("Error fetching posts:", error);
       message.error("Failed to fetch posts. Please try again later.");
@@ -26,23 +28,11 @@ const ProductPostList = () => {
     try {
       await approvePostMode(postId, "Open");
       message.success("Post approved successfully!");
-      setPosts(posts.filter((post) => post.id !== postId));
+      setPosts(posts.filter((post) => post.id !== postId)); // Xóa post đã được approve
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error approving post:", error);
       message.error("Failed to approve post. Please try again later.");
-    }
-  };
-
-  const handleReject = async (postId) => {
-    try {
-      await approvePostMode(postId, "Cancel");
-      message.success("Post rejected successfully!");
-      setPosts(posts.filter((post) => post.id !== postId));
-      setIsModalVisible(false);
-    } catch (error) {
-      console.error("Error rejecting post:", error);
-      message.error("Failed to reject post. Please try again later.");
     }
   };
 
@@ -55,15 +45,19 @@ const ProductPostList = () => {
     setIsModalVisible(false);
   };
 
+  const handlePageChange = (page) => {
+    setPageIndex(page); // Xử lý sự kiện khi chuyển trang
+  };
+
   const columns = [
     {
       title: "Product Name",
-      dataIndex: "title",
+      dataIndex: "title", // Tên trường trong dataSource
       key: "title",
     },
     {
       title: "Description",
-      dataIndex: "description",
+      dataIndex: "description", // Tên trường trong dataSource
       key: "description",
     },
     {
@@ -79,7 +73,13 @@ const ProductPostList = () => {
 
   return (
     <div>
-      <Table dataSource={posts} columns={columns} rowKey="id" />
+      <Table dataSource={posts} columns={columns} rowKey="id" pagination={false} />
+      <Pagination
+        current={pageIndex}
+        total={100} // Tổng số bài đăng (tạm thời)
+        pageSize={10} // Số lượng bài đăng trên mỗi trang
+        onChange={handlePageChange}
+      />
       <Modal
         title="Post Details"
         visible={isModalVisible}
