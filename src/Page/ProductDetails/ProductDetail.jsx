@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Container, Typography, Card, CardMedia, CardContent, Button, Box, Grid, Paper, Avatar, IconButton, Modal, TextField } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -17,11 +17,12 @@ import { buyProduct } from '../../Services/productTransaction';
 const ProductDetails = () => {
     const { id } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();  
     const { card } = location.state || {};
 
     const [phoneVisible, setPhoneVisible] = useState(false);
     const [similarListings, setSimilarListings] = useState([]);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0); // Track current image index
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const [reportContent, setReportContent] = useState('');
     const [isReportModalVisible, setIsReportModalVisible] = useState(false);
@@ -79,16 +80,15 @@ const ProductDetails = () => {
     };
 
     const handleStartChat = async () => {
-    try {
-        await buyProduct(card.id);
-        toast.success('Mua sản phẩm thành công!');
-        // Thực hiện các hành động tiếp theo sau khi mua thành công
-    } catch (error) {
-        console.error('Lỗi khi mua sản phẩm:', error);
-        toast.error('Đã xảy ra lỗi khi mua sản phẩm.');
-    }
-};
-
+        try {
+            await buyProduct(card.id);
+            toast.success('Mua sản phẩm thành công!');
+            navigate('/buyer-history');  
+        } catch (error) {
+            console.error('Lỗi khi mua sản phẩm:', error);
+            toast.error('Đã xảy ra lỗi khi mua sản phẩm.');
+        }
+    };
 
     if (!card) {
         return <div>Loading...</div>;
@@ -129,7 +129,7 @@ const ProductDetails = () => {
                                             </Box>
                                         ))}
                                         <IconButton onClick={handleNextImage}>
-                                            <ArrowForwardIosIcon />
+                                                                                       <ArrowForwardIosIcon />
                                         </IconButton>
                                     </Box>
                                 </Grid>
@@ -240,7 +240,6 @@ const ProductDetails = () => {
                 ))}
             </Grid>
 
-            {/* Modal for reporting */}
             <Modal
                 open={isReportModalVisible}
                 onClose={() => setIsReportModalVisible(false)}

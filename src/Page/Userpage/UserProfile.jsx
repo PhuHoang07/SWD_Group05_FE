@@ -120,7 +120,7 @@ const UserProfile = () => {
                     >
                         <MenuItem value="Waiting">Chờ duyệt</MenuItem>
                         <MenuItem value="Open">Mở</MenuItem>
-                        <MenuItem value="Close">Đóng</MenuItem>
+                        <MenuItem value="Closed">Đóng</MenuItem>
                     </Select>
                 </FormControl>
                 <Pagination

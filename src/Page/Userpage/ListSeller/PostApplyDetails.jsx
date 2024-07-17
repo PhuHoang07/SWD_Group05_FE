@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../Services/axios/config";
-import { Grid, Card, CardContent, Typography } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Checkbox, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { chooseBuyer } from "../../../Services/productPostApi";
 
 const PostApplyDetails = () => {
   const { id: transactionId } = useParams();
   const [transactions, setTransactions] = useState([]);
+  const [selectedBuyerId, setSelectedBuyerId] = useState(null);
 
   useEffect(() => {
     axios
@@ -18,6 +20,24 @@ const PostApplyDetails = () => {
         console.log(error);
       });
   }, [transactionId]);
+
+  const handleBuyerSelection = (buyerId) => {
+    setSelectedBuyerId(buyerId);
+  };
+
+  const handleChooseBuyer = async () => {
+    if (selectedBuyerId) {
+      try {
+        await chooseBuyer(transactionId, selectedBuyerId);
+        alert('Buyer chosen successfully!');
+      } catch (error) {
+        console.error('Error choosing buyer:', error);
+        alert('Failed to choose buyer.');
+      }
+    } else {
+      alert('Please select a buyer.');
+    }
+  };
 
   return (
     <div>
@@ -42,11 +62,19 @@ const PostApplyDetails = () => {
                 <Typography variant="body2" color="text.secondary">
                   Phone Number: {txn.buyerInfo.phoneNumber}
                 </Typography>
+                <Checkbox
+                  checked={selectedBuyerId === txn.id}
+                  onChange={() => handleBuyerSelection(txn.id)}
+                  inputProps={{ 'aria-label': 'Select Buyer' }}
+                />
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
+      <Button variant="contained" color="primary" onClick={handleChooseBuyer}>
+        Choose Buyer
+      </Button>
     </div>
   );
 };

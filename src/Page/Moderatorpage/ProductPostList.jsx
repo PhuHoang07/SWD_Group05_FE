@@ -92,7 +92,7 @@ const formatPrice = (price) => {
           <div>
             <p><strong>Title:</strong> {selectedPost.title}</p>
             <p><strong>Description:</strong> {selectedPost.description}</p>
-            <p><strong>Price:</strong> {formatPrice(productPost.price)}</p>
+            <p><strong>Price:</strong> {formatPrice(selectedPost.price)}</p>
             <p><strong>Created Date:</strong> {moment(selectedPost.createdDate).format('DD-MM-YYYY HH:mm:ss')}</p>
             <p><strong>Created By:</strong> {selectedPost.createdBy.fullName}</p>
             <p><strong>Email:</strong> {selectedPost.createdBy.email}</p>

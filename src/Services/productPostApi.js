@@ -37,3 +37,15 @@ export const approvePostMode = async (id, mode) => {
   }
 };
 
+export const chooseBuyer = async (id, mode) => {
+  try {
+    const response = await axiosClient.put(`/api/product-post/close/${id}`, JSON.stringify(mode), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (e) {
+    throw e.response ? e.response.data : new Error('An error occurred');
+  }
+};

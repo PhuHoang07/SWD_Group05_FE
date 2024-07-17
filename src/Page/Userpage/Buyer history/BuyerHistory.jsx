@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Divider, Row, Col, Button } from "antd";
+import { Typography, Divider, Row, Col, Button, Space } from "antd";
 import styled from "styled-components";
 import axiosClient from "../../../Services/axios/config";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -22,6 +22,7 @@ const StyledPostApplyDetails = styled.div`
 const PostApplyDetailsHistory = () => {
   const [userInformation, setUserInformation] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("Pending"); // Default filter to Pending
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -29,14 +30,14 @@ const PostApplyDetailsHistory = () => {
     console.log("User information from localStorage:", user);
 
     if (user) {
-      fetchTransactions(user.id);
+      fetchTransactions(user.id, statusFilter);
     }
-  }, []);
+  }, [statusFilter]);
 
-  const fetchTransactions = async (userId) => {
+  const fetchTransactions = async (userId, status) => {
     try {
       const response = await axiosClient.get(
-        `/api/product-transaction/me?status=Pending`
+        `/api/product-transaction/me?status=${status}`
       );
       console.log("API response:", response);
 
@@ -58,11 +59,11 @@ const PostApplyDetailsHistory = () => {
       console.log("Cancel response:", response);
 
       setTransactions((prevTransactions) =>
-        prevTransactions.filter((transaction) => transaction.id !== transactionId)
+        prevTransactions.filter((transaction) => transaction.responseModel.id !== transactionId)
       );
 
       toast.success("Transaction cancelled successfully.");
-      fetchTransactions(userInformation.id); // Load transactions again after successful cancellation
+      fetchTransactions(userInformation.id, statusFilter); // Load transactions again after successful cancellation
     } catch (error) {
       console.error("Error cancelling transaction:", error);
       toast.error("Failed to cancel the transaction.");
@@ -83,15 +84,32 @@ const PostApplyDetailsHistory = () => {
   return (
     <StyledPostApplyDetails>
       <Title level={3} style={{ textAlign: "center" }}>
-        Pending Transactions
+        {statusFilter === "Pending" ? "Pending Transactions" : "Success Transactions"}
       </Title>
       <Divider />
 
+      <Space size="middle">
+        <Button
+          type={statusFilter === "Pending" ? "primary" : "default"}
+          onClick={() => setStatusFilter("Pending")}
+        >
+          Pending
+        </Button>
+        <Button
+          type={statusFilter === "Success" ? "primary" : "default"}
+          onClick={() => setStatusFilter("Success")}
+        >
+          Success
+        </Button>
+      </Space>
+
+      <Divider />
+
       {transactions.length === 0 ? (
-        <Paragraph>No pending transactions found.</Paragraph>
+        <Paragraph>No {statusFilter.toLowerCase()} transactions found.</Paragraph>
       ) : (
         transactions.map((transaction) => (
-          <div key={transaction.id}>
+          <div key={transaction.responseModel.id}>
             <Row gutter={16}>
               <Col span={8}>
                 <div style={{ overflow: "hidden", borderRadius: "5px" }}>
@@ -100,9 +118,9 @@ const PostApplyDetailsHistory = () => {
                       <div key={index}>
                         <img
                           src={imageUrl}
-                          alt={transaction.id}
+                          alt={transaction.responseModel.id}
                           style={{
-                            width: "50%",
+                            width: "100%",
                             height: "auto",
                             objectFit: "cover",
                           }}
@@ -119,7 +137,7 @@ const PostApplyDetailsHistory = () => {
                     <strong>Transaction ID:</strong> {transaction.responseModel.id}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Description:</strong> {transaction.description}
+                    <strong>Description:</strong> {transaction.responseModel.description}
                   </Paragraph>
                   <Paragraph>
                     <strong>Category:</strong> {transaction.responseModel.category}
@@ -134,7 +152,21 @@ const PostApplyDetailsHistory = () => {
                     <strong>Transaction Date:</strong>{" "}
                     {new Date(transaction.transactAt).toLocaleString()}
                   </Paragraph>
-                  {transaction.responseModel && (
+                  {transaction.responseModel.createdBy && (
+                    <div>
+                      <Title level={5}>Seller Information</Title>
+                      <Paragraph>
+                        <strong>Name:</strong> {transaction.responseModel.createdBy.fullName}
+                      </Paragraph>
+                      <Paragraph>
+                        <strong>Email:</strong> {transaction.responseModel.createdBy.email}
+                      </Paragraph>
+                      <Paragraph>
+                        <strong>Phone Number:</strong> {transaction.responseModel.createdBy.phoneNumber}
+                      </Paragraph>
+                    </div>
+                  )}
+                  {statusFilter === "Pending" && (
                     <Button
                       type="primary"
                       danger
