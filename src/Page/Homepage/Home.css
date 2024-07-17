@@ -127,3 +127,44 @@
     font-size: 12px;
     margin: 5px 5px 0 0;
 }
+.home-container {
+    padding: 20px;
+}
+
+.slider-container {
+    margin-bottom: 20px;
+}
+
+.slider-image-container {
+    width: 100%;
+}
+
+.slider-image {
+    width: 100%;
+    height: auto;
+}
+
+.card-price {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.card-category {
+    margin-top: 10px;
+}
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 10px;
+}

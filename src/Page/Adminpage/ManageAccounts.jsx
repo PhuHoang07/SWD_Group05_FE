@@ -28,7 +28,6 @@ const ManageAccounts = () => {
     setLoading(true);
     try {
       const data = await getAllAccount();
-      console.log('Fetched accounts:', data);
       setAccounts(data);
     } catch (error) {
       console.error('Failed to fetch accounts:', error);
@@ -39,13 +38,14 @@ const ManageAccounts = () => {
   };
 
   const applyFilters = () => {
-    let filtered = accounts;
+    let filtered = [...accounts];
 
     if (searchTerm) {
+      const lowerCaseSearch = searchTerm.toLowerCase();
       filtered = filtered.filter(account =>
-        account.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        account.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        account.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase())
+        account.fullname.toLowerCase().includes(lowerCaseSearch) ||
+        account.phoneNumber.toLowerCase().includes(lowerCaseSearch) ||
+        account.email.toLowerCase().includes(lowerCaseSearch) // Thêm email vào filter
       );
     }
 
@@ -58,14 +58,17 @@ const ManageAccounts = () => {
 
   const showModal = (account) => {
     setEditingAccount(account);
-    form.setFieldsValue(account);
+    form.setFieldsValue({
+      fullname: account.fullname,
+      phoneNumber: account.phoneNumber,
+    });
     setIsModalVisible(true);
   };
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      await updateAccount(editingAccount.id, values.fullname, values.email, values.phoneNumber, values.role, values.status);
+      await updateAccountAdmin(editingAccount.id, values.fullname, values.phoneNumber);
       message.success('Account updated successfully');
       fetchAccounts();
       setIsModalVisible(false);
@@ -107,14 +110,14 @@ const ManageAccounts = () => {
       key: 'fullname',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
       title: 'Phone Number',
       dataIndex: 'phoneNumber',
       key: 'phoneNumber',
+    },
+    {
+      title: 'Email', // Thêm cột Email vào bảng
+      dataIndex: 'email',
+      key: 'email',
     },
     {
       title: 'Role',
@@ -128,25 +131,21 @@ const ManageAccounts = () => {
       render: (status) => getStatusTag(status),
     },
     {
-      title: 'Balance',
-      dataIndex: 'balance',
-      key: 'balance',
-    },
-    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
         <>
-          <Button type="link" onClick={() => showModal(record)} disabled={record.role === 'Admin'}>Edit</Button>
-          <Popconfirm
-            title="Are you sure to delete this account?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
-            disabled={record.role === 'Admin'}
-          >
-            <Button type="link" danger disabled={record.role === 'Admin'}>Delete</Button>
-          </Popconfirm>
+          <Button type="link" onClick={() => showModal(record)}>Edit</Button>
+          {record.status === 'Active' && ( // Chỉ hiển thị nút Delete khi status là Active
+            <Popconfirm
+              title="Are you sure to delete this account?"
+              onConfirm={() => handleDelete(record.id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="link" danger>Delete</Button>
+            </Popconfirm>
+          )}
         </>
       ),
     },
@@ -180,7 +179,11 @@ const ManageAccounts = () => {
       <Table
         columns={columns}
         dataSource={filteredAccounts}
-        pagination={{ current: currentPage, pageSize, total: filteredAccounts.length, onChange: (page, pageSize) => { setCurrentPage(page); setPageSize(pageSize); } }}
+        pagination={{ current: currentPage, pageSize, total: filteredAccounts.length }}
+        onChange={(pagination) => {
+          setCurrentPage(pagination.current);
+          setPageSize(pagination.pageSize);
+        }}
         rowKey="id"
         loading={loading}
       />
@@ -190,24 +193,8 @@ const ManageAccounts = () => {
           <Form.Item name="fullname" label="Full Name" rules={[{ required: true, message: 'Please input the full name!' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true, message: 'Please input the email!' }]}>
-            <Input />
-          </Form.Item>
           <Form.Item name="phoneNumber" label="Phone Number" rules={[{ required: true, message: 'Please input the phone number!' }]}>
             <Input />
-          </Form.Item>
-          <Form.Item name="role" label="Role" rules={[{ required: true, message: 'Please select a role!' }]}>
-            <Select>
-              <Option value="Admin">Admin</Option>
-              <Option value="Moderator">Moderator</Option>
-              <Option value="User">User</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="status" label="Status" rules={[{ required: true, message: 'Please select a status!' }]}>
-            <Select>
-              <Option value="Active">Active</Option>
-              <Option value="Inactive">Inactive</Option>
-            </Select>
           </Form.Item>
         </Form>
       </Modal>

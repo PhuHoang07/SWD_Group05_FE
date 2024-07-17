@@ -8,19 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const { Header } = Layout;
 const { Search } = Input;
 
-const menu = (
-    <Menu>
-        <Menu.Item key="1">
-            <Link to="#action/3.1" style={{ textDecoration: 'none', color: '#000' }}>Đồ điện tử</Link>
-        </Menu.Item>
-        <Menu.Item key="2">
-            <Link to="#action/3.2" style={{ textDecoration: 'none', color: '#000' }}>Quần áo</Link>
-        </Menu.Item>
-        <Menu.Item key="3">
-            <Link to="#action/3.3" style={{ textDecoration: 'none', color: '#000' }}>Trao đổi</Link>
-        </Menu.Item>
-    </Menu>
-);
+
 
 const AppHeader = () => {
     const navigate = useNavigate();
@@ -52,15 +40,11 @@ const AppHeader = () => {
             <Menu.Item key="2">
                 <Link to="/view-coin-transaction" style={{ textDecoration: 'none', color: '#000' }}>View transaction</Link>
             </Menu.Item>
-            <Menu.Item key="3" onClick={handleLogout}>
-                Log Out
-                <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Trang cá nhân</Link>
+            <Menu.Item key="3">
+                <Link to="/buyer-history" style={{ textDecoration: 'none', color: '#000' }}>Product Sell</Link>
             </Menu.Item>
-            <Menu.Item key="2">
-                <Link to="/buyer-history" style={{ textDecoration: 'none', color: '#000' }}>Đơn bán</Link>
-            </Menu.Item>
-            <Menu.Item key="3" onClick={handleLogout}>
-                Đăng xuất
+            <Menu.Item key="4" onClick={handleLogout}>
+                Logout
             </Menu.Item>
         </Menu>
     );
@@ -71,13 +55,6 @@ const AppHeader = () => {
                 <Link to="/" style={logoTextStyle}>FU GoodsExchange</Link>
             </div>
             <Menu theme="dark" mode="horizontal" style={menuStyle}>
-                <Menu.Item key="1" style={menuItemStyle}>
-                    <Dropdown overlay={menu}>
-                        <a onClick={e => e.preventDefault()} style={dropdownLinkStyle}>
-                            Danh mục <DownOutlined />
-                        </a>
-                    </Dropdown>
-                </Menu.Item>
                 <Menu.Item key="2" style={searchItemStyle}>
                     <Search
                         placeholder="Tìm kiếm sản phẩm"

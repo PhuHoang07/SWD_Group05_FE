@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Input, message, Row, Col } from 'antd';
-import { getAllReport } from '../../Services/reportApi';
+import { Table, Button, Modal, message } from 'antd';
+import { getAllReport, approveDenyProductPost } from '../../Services/reportApi';
 import { getProductPostById } from '../../Services/productPostApi';
 import moment from 'moment';
 
@@ -9,6 +9,7 @@ const ReportList = () => {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [productPost, setProductPost] = useState(null);
+  const [selectedReportId, setSelectedReportId] = useState(null); // State to store selected report id
 
   useEffect(() => {
     fetchReports();
@@ -27,15 +28,50 @@ const ReportList = () => {
     }
   };
 
-  const fetchProductPostDetails = async (id) => {
+  const fetchProductPostDetails = async (productPostId, reportId) => { // Update fetchProductPostDetails to accept reportId
     setLoading(true);
     try {
-      const data = await getProductPostById(id);
+      const data = await getProductPostById(productPostId);
       setProductPost(data);
       setModalVisible(true);
+      setSelectedReportId(reportId); // Store the reportId associated with this productPost
     } catch (error) {
       console.error('Failed to fetch product post details:', error);
       message.error('Failed to fetch product post details!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!selectedReportId) return; // Ensure there's a selected report id
+    setLoading(true);
+    try {
+      await approveDenyProductPost(selectedReportId, 'Approve'); // Use selectedReportId to approve
+      message.success('Post approved successfully!');
+      setReports(reports.filter((report) => report.id !== selectedReportId)); // Filter out the approved report
+      setModalVisible(false);
+      setSelectedReportId(null); // Reset selected report id
+    } catch (error) {
+      console.error('Error approving post:', error);
+      message.error('Failed to approve post. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeny = async () => {
+    if (!selectedReportId) return; // Ensure there's a selected report id
+    setLoading(true);
+    try {
+      await approveDenyProductPost(selectedReportId, 'Deny'); // Use selectedReportId to deny
+      message.success('Post denied successfully!');
+      setReports(reports.filter((report) => report.id !== selectedReportId)); // Filter out the denied report
+      setModalVisible(false);
+      setSelectedReportId(null); // Reset selected report id
+    } catch (error) {
+      console.error('Error denying post:', error);
+      message.error('Failed to deny post. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -62,10 +98,14 @@ const ReportList = () => {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
-        <Button onClick={() => fetchProductPostDetails(record.productPostId)}>Detail</Button>
+        <Button onClick={() => fetchProductPostDetails(record.productPostId, record.id)}>Detail</Button> // Pass reportId to fetchProductPostDetails
       ),
     },
   ];
+
+  const formatPrice = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ';
+  };
 
   return (
     <div>
@@ -81,6 +121,12 @@ const ReportList = () => {
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
+          <Button key="approve" type="primary" onClick={handleApprove}>
+            Approve
+          </Button>,
+          <Button key="deny" type="danger" onClick={handleDeny}>
+            Deny
+          </Button>,
           <Button key="close" onClick={() => setModalVisible(false)}>
             Close
           </Button>,
@@ -90,7 +136,7 @@ const ReportList = () => {
           <div>
             <p><strong>Title:</strong> {productPost.title}</p>
             <p><strong>Description:</strong> {productPost.description}</p>
-            <p><strong>Price:</strong> {productPost.price}</p>
+            <p><strong>Price:</strong> {formatPrice(productPost.price)}</p>
             <p><strong>Created Date:</strong> {moment(productPost.createdDate).format('DD-MM-YYYY HH:mm:ss')}</p>
             <p><strong>Created By:</strong> {productPost.createdBy.fullName}</p>
             <p><strong>Email:</strong> {productPost.createdBy.email}</p>
@@ -99,7 +145,7 @@ const ReportList = () => {
             <p><strong>Post Mode:</strong> {productPost.postMode}</p>
             <p><strong>Campus:</strong> {productPost.campus}</p>
             <p><strong>Image URLs:</strong></p>
-            {productPost.imageUrls.length > 0 ? (
+            {productPost.imageUrls && productPost.imageUrls.length > 0 ? (
               productPost.imageUrls.map((url, index) => (
                 <img key={index} src={url} alt={`Image ${index}`} style={{ maxWidth: '100%', marginBottom: 10 }} />
               ))
