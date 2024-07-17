@@ -70,7 +70,9 @@ const ProductPostList = () => {
       ),
     },
   ];
-
+const formatPrice = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ';
+    };
   return (
     <div>
       <Table dataSource={posts} columns={columns} rowKey="id" pagination={false} />
@@ -90,7 +92,7 @@ const ProductPostList = () => {
           <div>
             <p><strong>Title:</strong> {selectedPost.title}</p>
             <p><strong>Description:</strong> {selectedPost.description}</p>
-            <p><strong>Price:</strong> {selectedPost.price}</p>
+            <p><strong>Price:</strong> {formatPrice(productPost.price)}</p>
             <p><strong>Created Date:</strong> {moment(selectedPost.createdDate).format('DD-MM-YYYY HH:mm:ss')}</p>
             <p><strong>Created By:</strong> {selectedPost.createdBy.fullName}</p>
             <p><strong>Email:</strong> {selectedPost.createdBy.email}</p>

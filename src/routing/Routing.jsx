@@ -26,6 +26,7 @@ import PostApplyDetails from '../Page/Userpage/ListSeller/PostApplyDetails';
 import PayMentSuccess from '../Page/Userpage/payMentSuccess';
 import BuyerHistory from '../Page/Userpage/Buyer history/BuyerHistory';
 
+import ViewCoinTransaction from '../Page/Userpage/ViewCoinTransaction';
 
 function Routing() {
   return (
@@ -42,6 +43,7 @@ function Routing() {
           <Route path="seller-history" element={<SellerHistory />} />
           <Route path="buyer-history" element={<BuyerHistory />} />
           <Route path="post-apply-details/:id" element={<PostApplyDetails />} />
+          <Route path="view-coin-transaction" element={<ViewCoinTransaction />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
