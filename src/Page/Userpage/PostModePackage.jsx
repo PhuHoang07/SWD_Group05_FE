@@ -4,6 +4,8 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { getAllCoinPackActive } from '../../Services/coinPackageApi';
+import { payPack } from '../../Services/coinPackageApi'
+
 
 const sliderSettings = {
   dots: true,
@@ -24,18 +26,20 @@ const sliderImages = [
 function PostModePackage() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [options, setOptions] = useState([]);
-  const gameAccount = 'Duc Nguyen'; // Đặt tên tài khoản mẫu, có thể thay thế bằng props nếu cần
+
 
   useEffect(() => {
     const fetchCoinPacks = async () => {
       try {
         const data = await getAllCoinPackActive();
-        console.log(data);
+        console.log('', data);
         setOptions(data.map(option => ({
+          id: option.id,
           value: option.price,
           label: `${parseInt(option.price).toLocaleString()} VND`,
-          Xu: option.coinAmount, // Assuming 'Xu' is represented by 'coinAmount'
+          Xu: option.coinAmount,
         })));
+        
       } catch (error) {
         console.error('Failed to fetch coin packs:', error);
       }
@@ -43,11 +47,24 @@ function PostModePackage() {
     fetchCoinPacks(); 
   }, []);
 
-  const handlePayment = () => {
-    // Thêm logic xử lý thanh toán tại đây
-    console.log('Xử lý thanh toán');
+  const handlePayment = async () => {
+    if (selectedOption) {
+      const coinPackId = selectedOption.id;
+      const redirectUrl = 'http://localhost:5173/payment-success'; // Thay đổi redirectURL tùy theo cấu hình của bạn
+      try {
+        const data = await payPack(coinPackId, redirectUrl);
+        console.log('Payment successful:', data.data);
+        window.location.href = data.data.transactUrl;
+        // Xử lý logic sau khi thanh toán thành công, có thể là chuyển hướng hoặc cập nhật giao diện người dùng
+      } catch (error) {
+        console.error('Payment failed:', error);
+        // Xử lý logic khi thanh toán thất bại, có thể thông báo lỗi cho người dùng
+      }
+    } else {
+      console.log('No package selected');
+    }
   };
-
+  
   const handleAmountChange = (event) => {
     const selected = options.find(option => option.value === event.target.value);
     setSelectedOption(selected);
@@ -109,7 +126,7 @@ function PostModePackage() {
               Giá: {selectedOption && `${parseInt(selectedOption.value, 10).toLocaleString()} VND`}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>Phương thức thanh toán: Ví VNPAY</Typography>
-            <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>Tên tài khoản: {gameAccount}</Typography>
+          
           </Paper>
           <Button
             variant="contained"
