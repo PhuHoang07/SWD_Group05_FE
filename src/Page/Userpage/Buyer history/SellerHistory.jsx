@@ -6,8 +6,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const { Title, Paragraph } = Typography;
 
@@ -36,7 +34,7 @@ const PostApplyDetailsHistory = () => {
   const fetchTransactions = async (userId) => {
     try {
       const response = await axiosClient.get(
-        `/api/product-transaction/me?status=Pending`
+        `/api/product-post/me?status=Pending`
       );
       console.log("API response:", response);
 
@@ -46,26 +44,6 @@ const PostApplyDetailsHistory = () => {
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
-    }
-  };
-
-  const handleCancelTransaction = async (transactionId) => {
-    console.log("Cancelling transaction with ID:", transactionId);
-    try {
-      const response = await axiosClient.delete(
-        `/api/product-transaction/${transactionId}`
-      );
-      console.log("Cancel response:", response);
-
-      setTransactions((prevTransactions) =>
-        prevTransactions.filter((transaction) => transaction.id !== transactionId)
-      );
-
-      toast.success("Transaction cancelled successfully.");
-      fetchTransactions(userInformation.id); // Load transactions again after successful cancellation
-    } catch (error) {
-      console.error("Error cancelling transaction:", error);
-      toast.error("Failed to cancel the transaction.");
     }
   };
 
@@ -96,13 +74,13 @@ const PostApplyDetailsHistory = () => {
               <Col span={8}>
                 <div style={{ overflow: "hidden", borderRadius: "5px" }}>
                   <Slider {...settings}>
-                    {transaction.responseModel.imageUrls.map((imageUrl, index) => (
+                    {transaction.imageUrls.map((imageUrl, index) => (
                       <div key={index}>
                         <img
                           src={imageUrl}
                           alt={transaction.id}
                           style={{
-                            width: "50%",
+                            width: "100%",
                             height: "auto",
                             objectFit: "cover",
                           }}
@@ -114,34 +92,29 @@ const PostApplyDetailsHistory = () => {
               </Col>
               <Col span={16}>
                 <div style={{ paddingLeft: "20px" }}>
-                  <Title level={4}>{transaction.responseModel.Title}</Title>
+                  <Title level={4}>{transaction.title}</Title>
                   <Paragraph>
-                    <strong>Transaction ID:</strong> {transaction.responseModel.id}
+                    <strong>Transaction ID:</strong> {transaction.id}
                   </Paragraph>
                   <Paragraph>
                     <strong>Description:</strong> {transaction.description}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Category:</strong> {transaction.responseModel.category}
+                    <strong>Category:</strong> {transaction.category}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Campus:</strong> {transaction.responseModel.campus}
+                    <strong>Campus:</strong> {transaction.campus}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Price:</strong> {transaction.responseModel.price}
+                    <strong>Price:</strong> {transaction.price}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Transaction Date:</strong>{" "}
-                    {new Date(transaction.transactAt).toLocaleString()}
+                    <strong>Date:</strong> {new Date(transaction.expiredDate).toLocaleString()}
                   </Paragraph>
-                  {transaction.responseModel && (
-                    <Button
-                      type="primary"
-                      danger
-                      onClick={() => handleCancelTransaction(transaction.responseModel.id)}
-                    >
-                      Cancel
-                    </Button>
+                  {transaction.id && (
+                    <Link to={`/post-apply-details/${transaction.id}`}>
+                      View Details
+                    </Link>
                   )}
                 </div>
               </Col>

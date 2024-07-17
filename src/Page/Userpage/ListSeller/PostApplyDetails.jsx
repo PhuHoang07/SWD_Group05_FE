@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../Services/axios/config";
-import { Grid, Card, CardContent, Typography, Button } from "@mui/material";
+import { Grid, Card, CardContent, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 
 const PostApplyDetails = () => {
   const { id: transactionId } = useParams();
-  console.log("Transaction ID:", transactionId);
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
@@ -19,10 +18,6 @@ const PostApplyDetails = () => {
         console.log(error);
       });
   }, [transactionId]);
-
-  const handleSellClick = (txnId) => {
-    console.log(`Sell button clicked for transaction ID: ${txnId}`);
-  };
 
   return (
     <div>
@@ -47,17 +42,6 @@ const PostApplyDetails = () => {
                 <Typography variant="body2" color="text.secondary">
                   Phone Number: {txn.buyerInfo.phoneNumber}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Transacted At: {new Date(txn.transactAt).toLocaleString()}
-                </Typography>
-                <Button 
-                  variant="contained" 
-                  color="error" 
-                  onClick={() => handleSellClick(transactionId)}
-                  style={{ marginTop: '10px' }}
-                >
-                  Sell
-                </Button>
               </CardContent>
             </Card>
           </Grid>

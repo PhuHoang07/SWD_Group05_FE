@@ -50,9 +50,12 @@ const AppHeader = () => {
                 <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Trang cá nhân</Link>
             </Menu.Item>
             <Menu.Item key="2">
-                <Link to="/buyer-history" style={{ textDecoration: 'none', color: '#000' }}>Đơn bán</Link>
+                <Link to="/buyer-history" style={{ textDecoration: 'none', color: '#000' }}>Đơn mua</Link>
             </Menu.Item>
-            <Menu.Item key="3" onClick={handleLogout}>
+            <Menu.Item key="3">
+                <Link to="/seller-history" style={{ textDecoration: 'none', color: '#000' }}>Đơn bán</Link>
+            </Menu.Item>
+            <Menu.Item key="4" onClick={handleLogout}>
                 Đăng xuất
             </Menu.Item>
         </Menu>
