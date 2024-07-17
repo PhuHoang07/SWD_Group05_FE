@@ -44,3 +44,23 @@ export const updateCoinPack = async (id, coinAmount, price, status) => {
     throw e.response ? e.response.data : new Error('An error occurred');
   }
 };
+
+export const payPack = async (coinPackId, redirectUrl) => {
+  try {
+    const response = await axiosClient.post('/api/coin-transaction', {coinPackId, redirectUrl}); 
+    return response;
+  } catch (e) {
+    throw e.response ? e.response.data : new Error('An error occurred');
+  }
+};
+
+
+export const paymentSuccess = async (transactId, status) => {
+  try {
+    const response = await axiosClient.put('/api/coin-transaction', {transactId, status}); 
+    return response;
+  } catch (e) {
+    throw e.response ? e.response.data : new Error('An error occurred');
+  }
+};
+

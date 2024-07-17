@@ -22,8 +22,9 @@ import ProductPostList from '../Page/Moderatorpage/ProductPostList';
 import ReportList from '../Page/Moderatorpage/ReportList';
 import Moderator from '../Page/Moderatorpage/Moderator';
 import BuyerHistory from '../Page/Userpage/Buyer history/BuyerHistory';
-import BuyerSuccess from '../Page/Userpage/Buyer success/BuyerSuccess';
 import PostApplyDetails from '../Page/Userpage/ListSeller/PostApplyDetails';
+import PayMentSuccess from '../Page/Userpage/payMentSuccess';
+
 
 function Routing() {
   return (
@@ -37,6 +38,8 @@ function Routing() {
           <Route path="create-post" element={<CreatePost />} />
           <Route path="package-postmode" element={<PostModePackage />} />
           <Route path="edit-profile" element={<EditProfile />} />
+          <Route path="buyer-history" element={<BuyerHistory />} />
+          <Route path="post-apply-details/:id" element={<PostApplyDetails />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
@@ -55,12 +58,11 @@ function Routing() {
           <Route path="report-list" element={<ReportList />} />
         </Route>
       </Route>
-      <Route path="/post-apply-details" element={<PostApplyDetails />} />
-      <Route path="/buyer-success" element={<BuyerSuccess />} />
-      <Route path="/buyer-history" element={<BuyerHistory />} />
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/404-notfound" element={<Page404 />} />
+      <Route path="/payment-success" element={<PayMentSuccess />} />
     </Routes>
+
   );
 }
 

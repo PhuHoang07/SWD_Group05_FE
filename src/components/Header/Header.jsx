@@ -47,10 +47,13 @@ const AppHeader = () => {
     const userMenu = (
         <Menu>
             <Menu.Item key="1">
-                <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Trang ca nhan</Link>
+                <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Trang cá nhân</Link>
             </Menu.Item>
-            <Menu.Item key="2" onClick={handleLogout}>
-                Log Out
+            <Menu.Item key="2">
+                <Link to="/buyer-history" style={{ textDecoration: 'none', color: '#000' }}>Đơn bán</Link>
+            </Menu.Item>
+            <Menu.Item key="3" onClick={handleLogout}>
+                Đăng xuất
             </Menu.Item>
         </Menu>
     );
@@ -71,7 +74,7 @@ const AppHeader = () => {
                 <Menu.Item key="2" style={searchItemStyle}>
                     <Search
                         placeholder="Tìm kiếm sản phẩm"
-                        enterButton="Search"
+                        enterButton="Tìm kiếm"
                         size="large"
                         style={searchStyle}
                     />

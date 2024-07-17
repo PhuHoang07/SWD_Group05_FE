@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Carousel, Card, Col, Row } from 'antd';
 import { Link } from 'react-router-dom';
 import axiosClient from '../../Services/axios/config';
+
 import './Home.css';
 
 const Homepage = () => {
@@ -20,7 +21,7 @@ const Homepage = () => {
     fetchCardsData();
   }, []);
 
-  const sliderImages = [
+ const sliderImages = [
     'https://daihoc.fpt.edu.vn/wp-content/uploads/2020/02/web-banner-1920x550.jpg',
     'https://microsoft.fptcloud.com/wp-content/uploads/2023/11/FPT-Smart-Cloud-Blog-Post-BR8-1.png',
     'https://csmovietnam.com/wp-content/uploads/2023/08/banner-website-1920-x-900px-2.png',
