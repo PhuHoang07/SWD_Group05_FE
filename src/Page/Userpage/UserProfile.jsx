@@ -100,7 +100,16 @@ const UserProfile = () => {
                 <Box>
                     <Typography variant="h5" fontWeight="bold">{user.fullName}</Typography>
                     <Typography>{user.email}</Typography>
-                    <Typography>Balance: {user.balance}</Typography>
+                    <Typography>Balance: {user.balance}
+                    <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ ml: 2 }}
+                                onClick={() => navigate('/package-postmode')}
+                            >
+                                Nạp xu
+                            </Button>
+                    </Typography>
                     <Typography>Total Blogs: {blogs.length}</Typography>
                 </Box>
             </Box>

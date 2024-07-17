@@ -1,14 +1,18 @@
 import React, { useEffect } from 'react';
-import { Layout, Menu, Input, Button, Dropdown, Avatar } from 'antd';
+import { Layout, Menu, Button, Dropdown, Avatar } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { DownOutlined } from '@ant-design/icons';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+    UserOutlined,
+    ShoppingCartOutlined,
+    ShopOutlined,
+    TransactionOutlined,
+    LogoutOutlined,
+  } from '@ant-design/icons';
 
 const { Header } = Layout;
-const { Search } = Input;
-
-
 
 const AppHeader = () => {
     const navigate = useNavigate();
@@ -23,30 +27,29 @@ const AppHeader = () => {
 
     useEffect(() => {
         const loginSuccess = localStorage.getItem('loginSuccess');
-        console.log(user, user?.role, loginSuccess); // Added optional chaining for safety
         if (user && user.role && loginSuccess === "true") {
             toast.success("Đăng nhập thành công!");
             setTimeout(() => {
-                localStorage.removeItem('loginSuccess'); // Delay the removal to ensure toast is shown
-            }, 100); // Adjust delay as needed
+                localStorage.removeItem('loginSuccess');
+            }, 100);
         }
     }, [user]);
 
     const userMenu = (
         <Menu>
-            <Menu.Item key="1">
-                <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Your Profile</Link>
+            <Menu.Item key="1" icon={<UserOutlined />}>
+                <Link to="/user-profile">Your Profile</Link>
             </Menu.Item>
-            <Menu.Item key="2">
-                <Link to="/buyer-history" style={{ textDecoration: 'none', color: '#000' }}>Product Buy</Link>
+            <Menu.Item key="2" icon={<ShoppingCartOutlined />}>
+                <Link to="/buyer-history">Product Buy</Link>
             </Menu.Item>
-            <Menu.Item key="3">
-                <Link to="/seller-history" style={{ textDecoration: 'none', color: '#000' }}>Product Sell</Link>
+            <Menu.Item key="3" icon={<ShopOutlined />}>
+                <Link to="/seller-history">Product Sell</Link>
             </Menu.Item>
-            <Menu.Item key="4">
-                <Link to="/view-coin-transaction" style={{ textDecoration: 'none', color: '#000' }}>View transaction</Link>
+            <Menu.Item key="4" icon={<TransactionOutlined />}>
+                <Link to="/view-coin-transaction">View transaction</Link>
             </Menu.Item>
-            <Menu.Item key="5" onClick={handleLogout}>
+            <Menu.Item key="5" onClick={handleLogout} icon={<LogoutOutlined />}>
                 Logout
             </Menu.Item>
         </Menu>
@@ -57,21 +60,12 @@ const AppHeader = () => {
             <div style={logoStyle}>
                 <Link to="/" style={logoTextStyle}>FU GoodsExchange</Link>
             </div>
-            <Menu theme="dark" mode="horizontal" style={menuStyle}>
-                <Menu.Item key="2" style={searchItemStyle}>
-                    <Search
-                        placeholder="Tìm kiếm sản phẩm"
-                        enterButton="Tìm kiếm"
-                        size="large"
-                        style={searchStyle}
-                    />
-                </Menu.Item>
-            </Menu>
+            <div style={{ flex: 1 }}></div>
             <div>
                 {user && user.role ? (
                     <Dropdown overlay={userMenu}>
                         <a onClick={e => e.preventDefault()} style={dropdownLinkStyle}>
-                            <Avatar src="user-profile-image-url" style={{ marginRight: '10px' }} />
+                            <Avatar src="https://joeschmoe.io/api/v1/random" style={{ marginRight: '10px' }} />
                             {user.fullname} <DownOutlined />
                         </a>
                     </Dropdown>
@@ -90,7 +84,7 @@ const headerStyle = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: '#001529',
+    background: '#006400', 
     padding: '0 20px'
 };
 
@@ -105,34 +99,9 @@ const logoTextStyle = {
     textDecoration: 'none'
 };
 
-const menuStyle = {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-};
-
-const menuItemStyle = {
-    display: 'flex',
-    alignItems: 'center'
-};
-
 const dropdownLinkStyle = {
     color: '#fff',
     textDecoration: 'none'
-};
-
-const searchItemStyle = {
-    padding: 0
-};
-
-const searchStyle = {
-    width: '400px',
-    verticalAlign: 'middle'
-};
-
-const logoutButtonStyle = {
-    marginRight: '10px'
 };
 
 const loginButtonStyle = {

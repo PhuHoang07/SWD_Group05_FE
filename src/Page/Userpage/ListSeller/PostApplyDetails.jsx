@@ -20,33 +20,63 @@ const PostApplyDetails = () => {
   }, [transactionId]);
 
   return (
-    <div>
-      <h1>Details</h1>
-      <Grid container spacing={2}>
-        {transactions.map((txn) => (
-          <Grid item xs={12} sm={6} md={4} key={txn.id}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  Transaction ID: {txn.id}
-                </Typography>
-                <Typography variant="h6" component="div" style={{ marginTop: '10px' }}>
-                  Buyer Information
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Name: {txn.buyerInfo.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Email: {txn.buyerInfo.email}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Phone Number: {txn.buyerInfo.phoneNumber}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+    <div style={{ padding: "20px" }}>
+      <Typography variant="h4" gutterBottom style={{ textAlign: "center" }}>
+        List of Buyers
+      </Typography>
+
+      {transactions.length === 0 ? (
+        <Typography variant="body1" align="center">
+          No buyers for this post.
+        </Typography>
+      ) : (
+        <Grid container spacing={3}>
+          {transactions.map((txn) => (
+            <Grid item xs={12} sm={6} md={4} key={txn.id}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="h6" component="div">
+                    Transaction ID: {txn.id}
+                  </Typography>
+                  <Typography variant="subtitle1" color="text.secondary">
+                    <strong>Buyer Information</strong>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Name:</strong> {txn.buyerInfo.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Email:</strong> {txn.buyerInfo.email}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Phone Number:</strong> {txn.buyerInfo.phoneNumber}
+                  </Typography>
+                </CardContent>
+                <CardContent>
+                  <Typography variant="subtitle1" color="text.secondary">
+                    <strong>Additional Details:</strong>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Description:</strong> {txn.description}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Category:</strong> {txn.category}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Campus:</strong> {txn.campus}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Price:</strong> {txn.price}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Date:</strong>{" "}
+                    {new Date(txn.expiredDate).toLocaleString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </div>
   );
 };
