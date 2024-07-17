@@ -80,8 +80,8 @@ const PostApplyDetailsHistory = () => {
                           src={imageUrl}
                           alt={transaction.id}
                           style={{
-                            width: "100%",
-                            height: "auto",
+                            width: "50%",
+                            height: "50%",
                             objectFit: "cover",
                           }}
                         />
@@ -109,12 +109,15 @@ const PostApplyDetailsHistory = () => {
                     <strong>Price:</strong> {transaction.price}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Date:</strong> {new Date(transaction.expiredDate).toLocaleString()}
+                    <strong>Date:</strong>{" "}
+                    {new Date(transaction.expiredDate).toLocaleString()}
                   </Paragraph>
                   {transaction.id && (
-                    <Link to={`/post-apply-details/${transaction.id}`}>
-                      View Details
-                    </Link>
+                    <Button type="primary">
+                      <Link to={`/post-apply-details/${transaction.id}`}>
+                        View Buyers
+                      </Link>
+                    </Button>
                   )}
                 </div>
               </Col>

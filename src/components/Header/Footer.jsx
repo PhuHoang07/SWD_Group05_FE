@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 
 const footerStyle = {
-  backgroundColor: "#001529",
+  backgroundColor: "#006400",
   color: "white",
   marginTop: "30px",
   // padding: "20px",
@@ -30,7 +30,7 @@ export default function FooterLayout() {
               <strong>FU GOODSEXCHANGE</strong> We are a team of dedicated individuals committed to providing quality educational resources and tools for students. 
               Our mission is to make learning accessible and enjoyable for everyone.
               <br />
-              <Link style={{ color: "white", textDecoration: "underline" }} to="/aboutUs">
+              <Link style={{ color: "white", textDecoration: "underline" }} to="/">
                 Về chúng tôi
               </Link>
             </p>

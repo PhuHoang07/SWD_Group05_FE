@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import storage from '../../firebase/FirebaseConfig';
 import axiosClient from '../../Services/axios/config';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePost = () => {
@@ -87,7 +88,7 @@ const CreatePost = () => {
             const requiredFields = ['title', 'description', 'price', 'campusId', 'categoryId', 'postModeId', 'imagesUrl'];
             for (const field of requiredFields) {
                 if (!postData[field]) {
-                    console.error(`${field} is required.`);
+                    toast.error(`${field} is required.`);
                     return;
                 }
             }
