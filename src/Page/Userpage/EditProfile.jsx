@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Typography, Button, Tabs, Tab, Paper } from '@mui/material';
-import { changePassword } from '../../Services/accountApi';
+import { changePassword, updateAccountUser } from '../../Services/accountApi';
 import { toast } from 'react-toastify';
+import axiosClient from '../../Services/axios/config';
 import 'react-toastify/dist/ReactToastify.css';
 
 const EditProfile = () => {
@@ -9,9 +10,37 @@ const EditProfile = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [user, setUser] = useState({ id: '', fullname: '', email: '', phoneNumber: '' });
+
+    useEffect(() => {
+        const fetchUserData = async (userId) => {
+            try {
+                const response = await axiosClient.get(`/api/user/view/${userId}`);
+                setUser(response.data);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                toast.error('Lỗi khi tải thông tin người dùng.');
+            }
+        };
+
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            fetchUserData(storedUser.id);
+        }
+    }, []);
 
     const handleTabChange = (event, newIndex) => {
         setTabIndex(newIndex);
+    };
+
+    const handleUpdateUser = async () => {
+        try {
+            const response = await updateAccountUser(user.id, user.fullname, user.phoneNumber);
+            toast.success('Cập nhật hồ sơ thành công.');
+        } catch (error) {
+            console.error('Error updating user:', error);
+            toast.error('Lỗi khi cập nhật hồ sơ. Vui lòng thử lại sau.');
+        }
     };
 
     const handlePasswordChange = async () => {
@@ -22,7 +51,7 @@ const EditProfile = () => {
             }
 
             const response = await changePassword(oldPassword, newPassword, confirmPassword);
-            toast.success(response.message);
+            toast.success('Thay đổi mật khẩu thành công.');
             // Clear password fields after successful change
             setOldPassword('');
             setNewPassword('');
@@ -55,19 +84,28 @@ const EditProfile = () => {
                         <TextField
                             required
                             label="Họ và tên"
-                            defaultValue="Đức Nguyễn"
+                            value={user.fullname}
+                            onChange={(e) => setUser({ ...user, fullname: e.target.value })}
                         />
                         <TextField
                             required
                             label="Email"
-                            defaultValue="ducnxse171688@fpt.edu.vn"
+                            value={user.email}
+                            InputProps={{
+                                readOnly: true,
+                            }}
                         />
                         <TextField
                             required
                             label="Số điện thoại"
-                            defaultValue="0903764392"
+                            value={user.phoneNumber}
+                            onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
                         />
-                        <Button variant="contained" color="primary">
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleUpdateUser}
+                        >
                             Lưu
                         </Button>
                     </Box>

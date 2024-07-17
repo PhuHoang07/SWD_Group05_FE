@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Select, message, Popconfirm, Row, Col, Tag } from 'antd';
-import { getAllAccount, updateAccount, deleteAccount } from '../../Services/accountApi';
+import { getAllAccount, updateAccountAdmin, deleteAccount } from '../../Services/accountApi';
 
 const { Option } = Select;
 

@@ -9,7 +9,7 @@ export const getAllAccount = async (pageIndex = 0, pageSize = 6, search = '') =>
   }
 };
 
-export const updateAccount = async (id, fullname, email, phoneNumber, role) => {
+export const updateAccountAdmin = async (id, fullname, email, phoneNumber, role) => {
   try {
     const response = await axiosClient.put(`/api/user/update`, { id, fullname,email, phoneNumber, role});
     return response.data;
@@ -17,6 +17,16 @@ export const updateAccount = async (id, fullname, email, phoneNumber, role) => {
     throw e.response ? e.response.data : new Error('An error occurred');
   }
 };
+
+export const updateAccountUser = async (id, fullname, phoneNumber) => {
+  try {
+    const response = await axiosClient.put(`/api/user/update?id=${id}`, { fullname, phoneNumber });
+    return response.data;
+  } catch (e) {
+    throw e.response ? e.response.data : new Error('An error occurred');
+  }
+};
+
 
 export const deleteAccount = async (id) => {
   try {

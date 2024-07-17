@@ -94,13 +94,17 @@ const ManageCoinPacks = () => {
     return <Tag>{status}</Tag>;
   };
 
+  const formatPrice = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ';
+  };
+
   const columns = [
     { title: 'Coin Amount', dataIndex: 'coinAmount', key: 'coinAmount' },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      render: (text) => `${text} VNĐ`,
+      render: (text) => formatPrice(text),
     },
     {
       title: 'Status',

@@ -47,6 +47,13 @@ const AppHeader = () => {
     const userMenu = (
         <Menu>
             <Menu.Item key="1">
+                <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Your Profile</Link>
+            </Menu.Item>
+            <Menu.Item key="2">
+                <Link to="/view-coin-transaction" style={{ textDecoration: 'none', color: '#000' }}>View transaction</Link>
+            </Menu.Item>
+            <Menu.Item key="3" onClick={handleLogout}>
+                Log Out
                 <Link to="/user-profile" style={{ textDecoration: 'none', color: '#000' }}>Trang cá nhân</Link>
             </Menu.Item>
             <Menu.Item key="2">
