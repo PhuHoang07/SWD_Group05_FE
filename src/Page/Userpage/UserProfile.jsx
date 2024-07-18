@@ -6,6 +6,7 @@ import axiosClient from '../../Services/axios/config';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Pagination from '@mui/material/Pagination';
+import { Tag } from 'antd'; // Importing Ant Design Tag component
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -77,6 +78,21 @@ const UserProfile = () => {
         setStatus(event.target.value); // Handle status change
     };
 
+    const getStatusTag = (status) => {
+        if (status === 'Waiting') {
+            return <Tag color="yellow">{status}</Tag>;
+        } else if (status === 'Open') {
+            return <Tag color="green">{status}</Tag>;
+        } else if (status === 'Close') {
+            return <Tag color="red">{status}</Tag>;
+        }
+        return <Tag>{status}</Tag>;
+    };
+
+    const formatPrice = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ';
+    };
+
     return (
         <Container maxWidth="lg" sx={{ mt: 4, bgcolor: '#f0f0f0', color: '#333', borderRadius: 1, p: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -84,7 +100,16 @@ const UserProfile = () => {
                 <Box>
                     <Typography variant="h5" fontWeight="bold">{user.fullName}</Typography>
                     <Typography>{user.email}</Typography>
-                    <Typography>Balance: {user.balance}</Typography>
+                    <Typography>Balance: {user.balance}
+                    <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ ml: 2 }}
+                                onClick={() => navigate('/package-postmode')}
+                            >
+                                Nạp xu
+                            </Button>
+                    </Typography>
                     <Typography>Total Blogs: {blogs.length}</Typography>
                 </Box>
             </Box>
@@ -104,7 +129,7 @@ const UserProfile = () => {
                     >
                         <MenuItem value="Waiting">Chờ duyệt</MenuItem>
                         <MenuItem value="Open">Mở</MenuItem>
-                        <MenuItem value="Close">Đóng</MenuItem>
+                        <MenuItem value="Closed">Đóng</MenuItem>
                     </Select>
                 </FormControl>
                 <Pagination
@@ -125,7 +150,6 @@ const UserProfile = () => {
                             <TableCell>Price</TableCell>
                             <TableCell>Date</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -140,19 +164,9 @@ const UserProfile = () => {
                                     <TableCell><img src={blog.imageUrls[0]} alt={blog.title} width="50" /></TableCell>
                                     <TableCell>{blog.title}</TableCell>
                                     <TableCell>{blog.category}</TableCell>
-                                    <TableCell>{blog.price} VNĐ</TableCell>
+                                    <TableCell>{formatPrice(blog.price)}</TableCell>
                                     <TableCell>{new Date(blog.createdDate).toLocaleDateString()}</TableCell>
-                                    <TableCell>{blog.status}</TableCell>
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            color="error"
-                                            startIcon={<DeleteIcon />}
-                                            onClick={() => handleDelete(blog.id)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </TableCell>
+                                    <TableCell>{getStatusTag(blog.status)}</TableCell>
                                 </TableRow>
                             ))
                         )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
-import { Container, Typography, Card, CardMedia, CardContent, Button, Box, Grid, Paper, Avatar, IconButton } from '@mui/material';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { Container, Typography, Card, CardMedia, CardContent, Button, Box, Grid, Paper, Avatar, IconButton, Modal, TextField } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -9,15 +9,23 @@ import AlertIcon from '@mui/icons-material/Error';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import axiosClient from '../../Services/axios/config';
+import { createReport } from '../../Services/reportApi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { buyProduct } from '../../Services/productTransaction';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();  
     const { card } = location.state || {};
 
     const [phoneVisible, setPhoneVisible] = useState(false);
     const [similarListings, setSimilarListings] = useState([]);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0); // Track current image index
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const [reportContent, setReportContent] = useState('');
+    const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
     useEffect(() => {
         const fetchSimilarListings = async () => {
@@ -40,14 +48,19 @@ const ProductDetails = () => {
         setPhoneVisible(true);
     };
 
-    const handleReportSold = () => {
-        // Handle report sold logic here
-        alert('Báo cáo: Sản phẩm đã được bán.');
+    const handleReportInvalid = () => {
+        setIsReportModalVisible(true);
     };
 
-    const handleReportInvalid = () => {
-        // Handle report invalid logic here
-        alert('Báo cáo: Thông tin không hợp lệ.');
+    const handleReportSubmit = async () => {
+        try {
+            await createReport(reportContent, card.id);
+            setIsReportModalVisible(false);
+            toast.success('Báo cáo đã được gửi thành công!');
+        } catch (error) {
+            console.error('Error creating report:', error);
+            alert('Đã xảy ra lỗi khi gửi báo cáo.');
+        }
     };
 
     const handleImageClick = (index) => {
@@ -60,6 +73,21 @@ const ProductDetails = () => {
 
     const handleNextImage = () => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % card.imageUrls.length);
+    };
+
+    const formatPrice = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' VNĐ';
+    };
+
+    const handleStartChat = async () => {
+        try {
+            await buyProduct(card.id);
+            toast.success('Mua sản phẩm thành công!');
+            navigate('/buyer-history');  
+        } catch (error) {
+            console.error('Lỗi khi mua sản phẩm:', error);
+            toast.error('Đã xảy ra lỗi khi mua sản phẩm.');
+        }
     };
 
     if (!card) {
@@ -101,7 +129,7 @@ const ProductDetails = () => {
                                             </Box>
                                         ))}
                                         <IconButton onClick={handleNextImage}>
-                                            <ArrowForwardIosIcon />
+                                                                                       <ArrowForwardIosIcon />
                                         </IconButton>
                                     </Box>
                                 </Grid>
@@ -110,7 +138,7 @@ const ProductDetails = () => {
                                 {card.title}
                             </Typography>
                             <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
-                                Price: {card.price}
+                                Giá: {formatPrice(card.price)}
                             </Typography>
                             <Typography variant="body1" sx={{ mb: 2 }}>
                                 {card.description}
@@ -123,18 +151,10 @@ const ProductDetails = () => {
                                 ))}
                             </Box>
                             <Typography variant="body2" sx={{ mt: 2 }}>
-                                Campus: {card.campus}
+                                Khu vực: {card.campus}
                             </Typography>
                         </CardContent>
                         <Box sx={{ mt: 2, ml: 2, mb: 4 }}>
-                            <Button
-                                variant="contained"
-                                color="warning"
-                                startIcon={<ReportIcon />}
-                                onClick={handleReportSold}
-                            >
-                                Báo cáo: Đã bán
-                            </Button>
                             <Button
                                 variant="contained"
                                 color="error"
@@ -180,11 +200,7 @@ const ProductDetails = () => {
                             color="info"
                             startIcon={<ChatIcon />}
                             sx={{ mt: 1, width: '100%' }}
-                            component={Link}
-                            to={{
-                                pathname: "/",
-                                state: { product: card }
-                            }}
+                            onClick={handleStartChat}
                         >
                             Trao đổi với người bán
                         </Button>
@@ -213,7 +229,7 @@ const ProductDetails = () => {
                                     {listing.title}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    {listing.price}
+                                    {formatPrice(listing.price)}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
                                     Campus: {listing.campus}
@@ -223,6 +239,51 @@ const ProductDetails = () => {
                     </Grid>
                 ))}
             </Grid>
+
+            <Modal
+                open={isReportModalVisible}
+                onClose={() => setIsReportModalVisible(false)}
+                aria-labelledby="report-modal-title"
+                aria-describedby="report-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                    }}
+                >
+                    <Typography variant="h6" id="report-modal-title" gutterBottom>
+                        Báo cáo: Tin không hợp lệ
+                    </Typography>
+                    <TextField
+                        id="report-content"
+                        label="Nội dung báo cáo"
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                        fullWidth
+                        value={reportContent}
+                        onChange={(e) => setReportContent(e.target.value)}
+                        sx={{ mt: 2 }}
+                    />
+                    <Button
+                        variant="contained"
+                        onClick={handleReportSubmit}
+                        sx={{ mt: 2 }}
+                    >
+                        Gửi báo cáo
+                    </Button>
+                </Box>
+            </Modal>
+
+            {/* Toast Container for notifications */}
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
         </Container>
     );
 };

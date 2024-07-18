@@ -21,10 +21,12 @@ import ManagePostMode from '../Page/Adminpage/ManagePostMode';
 import ProductPostList from '../Page/Moderatorpage/ProductPostList';
 import ReportList from '../Page/Moderatorpage/ReportList';
 import Moderator from '../Page/Moderatorpage/Moderator';
-import BuyerHistory from '../Page/Userpage/Buyer history/BuyerHistory';
+import SellerHistory from '../Page/Userpage/Buyer history/SellerHistory';
 import PostApplyDetails from '../Page/Userpage/ListSeller/PostApplyDetails';
 import PayMentSuccess from '../Page/Userpage/payMentSuccess';
+import BuyerHistory from '../Page/Userpage/Buyer history/BuyerHistory';
 
+import ViewCoinTransaction from '../Page/Userpage/ViewCoinTransaction';
 
 function Routing() {
   return (
@@ -38,8 +40,10 @@ function Routing() {
           <Route path="create-post" element={<CreatePost />} />
           <Route path="package-postmode" element={<PostModePackage />} />
           <Route path="edit-profile" element={<EditProfile />} />
+          <Route path="seller-history" element={<SellerHistory />} />
           <Route path="buyer-history" element={<BuyerHistory />} />
           <Route path="post-apply-details/:id" element={<PostApplyDetails />} />
+          <Route path="view-coin-transaction" element={<ViewCoinTransaction />} />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
