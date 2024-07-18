@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../Services/axios/config";
 import { Grid, Card, CardContent, Typography, Checkbox, Button } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { chooseBuyer } from "../../../Services/productPostApi";
 
 const PostApplyDetails = () => {
+  const navigate = useNavigate();
   const { id: transactionId } = useParams();
   const [transactions, setTransactions] = useState([]);
   const [selectedBuyerId, setSelectedBuyerId] = useState(null);
@@ -30,6 +31,7 @@ const PostApplyDetails = () => {
       try {
         await chooseBuyer(transactionId, selectedBuyerId);
         alert('Buyer chosen successfully!');
+        navigate('/seller-history');
       } catch (error) {
         console.error('Error choosing buyer:', error);
         alert('Failed to choose buyer.');

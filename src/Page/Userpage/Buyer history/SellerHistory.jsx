@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Divider, Row, Col, Button, Modal, Select } from "antd";
+import { Typography, Divider, Row, Col, Button } from "antd";
 import styled from "styled-components";
 import axiosClient from "../../../Services/axios/config";
 import Slider from "react-slick";
@@ -8,7 +8,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
-const { Option } = Select;
 
 const StyledPostApplyDetails = styled.div`
   padding: 20px;
@@ -21,11 +20,8 @@ const StyledPostApplyDetails = styled.div`
 const PostApplyDetailsHistory = () => {
   const [userInformation, setUserInformation] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [status, setStatus] = useState("Pending"); // Mặc định là "Pending"
-  const [postModes, setPostModes] = useState([]);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedMode, setSelectedMode] = useState(null);
+  const [status, setStatus] = useState("Pending"); // Default is "Pending"
+  const [activePostModes, setActivePostModes] = useState([]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -33,27 +29,15 @@ const PostApplyDetailsHistory = () => {
     console.log("User information from localStorage:", user);
 
     if (user) {
-      fetchTransactions(user.id, status); // Gọi fetchTransactions với status hiện tại
+      fetchTransactions(user.id, status); // Call fetchTransactions with the current status
     }
 
-    // Fetch post modes
-    const fetchOptions = async () => {
-      try {
-        const postModesResponse = await axiosClient.get('/api/post-mode/view/active');
-        const sortedPostModes = postModesResponse.data.sort((a, b) => a.id - b.id);
-        setPostModes(sortedPostModes);
-      } catch (error) {
-        console.error('Error fetching options:', error);
-      }
-    };
-    fetchOptions();
+    fetchActivePostModes(); // Fetch active post modes
   }, [status]);
 
   const fetchTransactions = async (userId, status) => {
     try {
-      const response = await axiosClient.get(
-        `/api/product-post/me?status=${status}`
-      );
+      const response = await axiosClient.get(`/api/product-post/me?status=${status}`);
       console.log("API response:", response);
 
       if (response && response.data) {
@@ -62,6 +46,16 @@ const PostApplyDetailsHistory = () => {
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
+    }
+  };
+
+  const fetchActivePostModes = async () => {
+    try {
+      const response = await axiosClient.get(`/api/post-mode/view/active`);
+      setActivePostModes(response.data);
+      console.log("Active post modes:", response.data);
+    } catch (error) {
+      console.error("Error fetching active post modes:", error);
     }
   };
 
@@ -77,37 +71,7 @@ const PostApplyDetailsHistory = () => {
   };
 
   const handleStatusChange = (newStatus) => {
-    setStatus(newStatus); // Cập nhật status khi người dùng chọn
-  };
-
-  const handlePostModeClick = (transaction) => {
-    setSelectedTransaction(transaction);
-    setModalVisible(true);
-  };
-
-  const handleModalOk = async () => {
-  try {
-    const response = await axiosClient.put(
-      `/api/product-post/extend/${selectedTransaction.id}`,
-      JSON.stringify(selectedMode),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log("Extend product response:", response);
-    fetchTransactions(userInformation.id, status);
-    
-    setModalVisible(false);
-  } catch (error) {
-    console.error("Error extending product:", error);
-  }
-};
-
-
-  const handleModalCancel = () => {
-    setModalVisible(false);
+    setStatus(newStatus); // Update status when user selects
   };
 
   return (
@@ -161,14 +125,29 @@ const PostApplyDetailsHistory = () => {
                     <strong>Price:</strong> {transaction.price}
                   </Paragraph>
                   <Paragraph>
-                    <strong>Date:</strong>{" "}
-                    {new Date(transaction.expiredDate).toLocaleString()}
+                    <strong>Date:</strong> {new Date(transaction.expiredDate).toLocaleString()}
                   </Paragraph>
-                  {transaction.status === "Expired" && (
-                    <Button type="primary" onClick={() => handlePostModeClick(transaction)}>
-                      Post Mode
-                    </Button>
-                  )}
+
+                  {status === "Pending" && (
+  <Button type="primary">
+    <Link
+      to={`/post-apply-details/${transaction.id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      View Buyers
+    </Link>
+  </Button>
+)}
+{status === "Expired" && (
+  <Button type="primary">
+    <Link
+      to={`/post-apply-details/${transaction.id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      Post Mode
+    </Link>
+  </Button>
+)}
                 </div>
               </Col>
             </Row>
@@ -176,23 +155,6 @@ const PostApplyDetailsHistory = () => {
           </div>
         ))
       )}
-
-      <Modal
-        title="Select Post Mode"
-        visible={modalVisible}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-      >
-        <Select
-          style={{ width: "100%" }}
-          placeholder="Select a Post Mode"
-          onChange={value => setSelectedMode(value)}
-        >
-          {postModes.map(mode => (
-            <Option key={mode.id} value={mode.id}>{mode.type}</Option>
-          ))}
-        </Select>
-      </Modal>
 
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <Button
