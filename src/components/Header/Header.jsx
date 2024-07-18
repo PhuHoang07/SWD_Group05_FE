@@ -10,7 +10,7 @@ import {
     ShopOutlined,
     TransactionOutlined,
     LogoutOutlined,
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 
 const { Header } = Layout;
 
@@ -38,18 +38,18 @@ const AppHeader = () => {
     const userMenu = (
         <Menu>
             <Menu.Item key="1" icon={<UserOutlined />}>
-                <Link to="/user-profile">Your Profile</Link>
+                <Link to="/user-profile" style={{ textDecoration: 'none', color: 'inherit' }}>Your Profile</Link>
             </Menu.Item>
             <Menu.Item key="2" icon={<ShoppingCartOutlined />}>
-                <Link to="/buyer-history">Product Buy</Link>
+                <Link to="/buyer-history" style={{ textDecoration: 'none', color: 'inherit' }}>Product Buy</Link>
             </Menu.Item>
             <Menu.Item key="3" icon={<ShopOutlined />}>
-                <Link to="/seller-history">Product Sell</Link>
+                <Link to="/seller-history" style={{ textDecoration: 'none', color: 'inherit' }}>Product Sell</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<TransactionOutlined />}>
-                <Link to="/view-coin-transaction">View transaction</Link>
+                <Link to="/view-coin-transaction" style={{ textDecoration: 'none', color: 'inherit' }}>View transaction</Link>
             </Menu.Item>
-            <Menu.Item key="5" onClick={handleLogout} icon={<LogoutOutlined />}>
+            <Menu.Item key="5" onClick={handleLogout} icon={<LogoutOutlined />} style={{ textDecoration: 'none' }}>
                 Logout
             </Menu.Item>
         </Menu>

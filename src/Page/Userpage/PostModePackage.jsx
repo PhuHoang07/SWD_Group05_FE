@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import { getAllCoinPackActive } from '../../Services/coinPackageApi';
 import { payPack } from '../../Services/coinPackageApi'
 
-
 const sliderSettings = {
   dots: true,
   infinite: true,
@@ -27,19 +26,18 @@ function PostModePackage() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [options, setOptions] = useState([]);
 
-
   useEffect(() => {
     const fetchCoinPacks = async () => {
       try {
         const data = await getAllCoinPackActive();
         console.log('', data);
-        setOptions(data.map(option => ({
+        const sortedData = data.sort((a, b) => a.price - b.price);
+        setOptions(sortedData.map(option => ({
           id: option.id,
           value: option.price,
           label: `${parseInt(option.price).toLocaleString()} VND`,
           Xu: option.coinAmount,
         })));
-        
       } catch (error) {
         console.error('Failed to fetch coin packs:', error);
       }
@@ -64,7 +62,7 @@ function PostModePackage() {
       console.log('No package selected');
     }
   };
-  
+
   const handleAmountChange = (event) => {
     const selected = options.find(option => option.value === event.target.value);
     setSelectedOption(selected);
@@ -126,7 +124,6 @@ function PostModePackage() {
               Giá: {selectedOption && `${parseInt(selectedOption.value, 10).toLocaleString()} VND`}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>Phương thức thanh toán: Ví VNPAY</Typography>
-          
           </Paper>
           <Button
             variant="contained"

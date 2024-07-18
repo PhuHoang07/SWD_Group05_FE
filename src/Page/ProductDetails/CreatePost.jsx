@@ -34,7 +34,9 @@ const CreatePost = () => {
                     axiosClient.get('/api/category/view-all')
                 ]);
                 setCampusOptions(campusResponse.data);
-                setPostModes(postModesResponse.data);
+                // Sort postModes numerically by id or any numeric property
+                const sortedPostModes = postModesResponse.data.sort((a, b) => a.id - b.id);
+                setPostModes(sortedPostModes);
                 setCategoryOptions(categoryResponse.data);
             } catch (error) {
                 console.error('Error fetching options:', error);
@@ -226,10 +228,11 @@ const CreatePost = () => {
                         <FormControl fullWidth required>
                             <InputLabel>Chế độ đăng bài</InputLabel>
                             <Select value={postMode || ''} label="Chế độ đăng bài" onChange={handleChange(setPostMode)}>
-                                {postModes.map(mode => (
-                                    <MenuItem key={mode.id} value={mode.id}>{mode.type}</MenuItem>
-                                ))}
-                            </Select>
+  {postModes.sort((a, b) => a.type.localeCompare(b.type)).map(mode => (
+    <MenuItem key={mode.id} value={mode.id}>{mode.type}</MenuItem>
+  ))}
+</Select>
+
                         </FormControl>
                         <Button type="submit" variant="contained" color="primary">
                             Đăng bài

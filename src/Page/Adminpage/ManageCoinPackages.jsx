@@ -105,6 +105,7 @@ const ManageCoinPacks = () => {
       dataIndex: 'price',
       key: 'price',
       render: (text) => formatPrice(text),
+      sorter: (a, b) => a.price - b.price,
     },
     {
       title: 'Status',
@@ -168,6 +169,16 @@ const ManageCoinPacks = () => {
             rules={[{ required: true, message: 'Please input the price!' }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            name="status"
+            label="Status"
+            rules={[{ required: true, message: 'Please select the status!' }]}
+          >
+            <Select>
+              <Option value="Active">Active</Option>
+              <Option value="Inactive">Inactive</Option>
+            </Select>
           </Form.Item>
         </Form>
       </Modal>

@@ -114,7 +114,10 @@ const PostApplyDetailsHistory = () => {
                   </Paragraph>
                   {transaction.id && (
                     <Button type="primary">
-                      <Link to={`/post-apply-details/${transaction.id}`}>
+                      <Link
+                        to={`/post-apply-details/${transaction.id}`}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                      >
                         View Buyers
                       </Link>
                     </Button>

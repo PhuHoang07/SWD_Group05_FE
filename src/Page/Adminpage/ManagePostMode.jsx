@@ -94,6 +94,10 @@ const ManagePostMode = () => {
     return <Tag>{status}</Tag>;
   };
 
+  const formatPrice = (price) => {
+    return `${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} xu`;
+  };
+
   const columns = [
     { title: 'Type', dataIndex: 'type', key: 'type' },
     { title: 'Duration', dataIndex: 'duration', key: 'duration' },
@@ -101,7 +105,8 @@ const ManagePostMode = () => {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      render: (text) => `${text} xu`,
+      render: (text) => formatPrice(text),
+      sorter: (a, b) => a.price - b.price,
     },
     {
       title: 'Status',
