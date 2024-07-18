@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Divider, Row, Col, Button } from "antd";
+import { Typography, Divider, Row, Col, Button, Modal, Select } from "antd";
 import styled from "styled-components";
 import axiosClient from "../../../Services/axios/config";
 import Slider from "react-slick";
@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
+const { Option } = Select;
 
 const StyledPostApplyDetails = styled.div`
   padding: 20px;
@@ -20,6 +21,11 @@ const StyledPostApplyDetails = styled.div`
 const PostApplyDetailsHistory = () => {
   const [userInformation, setUserInformation] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [status, setStatus] = useState("Pending"); // Mặc định là "Pending"
+  const [postModes, setPostModes] = useState([]);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMode, setSelectedMode] = useState(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -27,14 +33,26 @@ const PostApplyDetailsHistory = () => {
     console.log("User information from localStorage:", user);
 
     if (user) {
-      fetchTransactions(user.id);
+      fetchTransactions(user.id, status); // Gọi fetchTransactions với status hiện tại
     }
-  }, []);
 
-  const fetchTransactions = async (userId) => {
+    // Fetch post modes
+    const fetchOptions = async () => {
+      try {
+        const postModesResponse = await axiosClient.get('/api/post-mode/view/active');
+        const sortedPostModes = postModesResponse.data.sort((a, b) => a.id - b.id);
+        setPostModes(sortedPostModes);
+      } catch (error) {
+        console.error('Error fetching options:', error);
+      }
+    };
+    fetchOptions();
+  }, [status]);
+
+  const fetchTransactions = async (userId, status) => {
     try {
       const response = await axiosClient.get(
-        `/api/product-post/me?status=Pending`
+        `/api/product-post/me?status=${status}`
       );
       console.log("API response:", response);
 
@@ -58,15 +76,49 @@ const PostApplyDetailsHistory = () => {
     adaptiveHeight: true,
   };
 
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus); // Cập nhật status khi người dùng chọn
+  };
+
+  const handlePostModeClick = (transaction) => {
+    setSelectedTransaction(transaction);
+    setModalVisible(true);
+  };
+
+  const handleModalOk = async () => {
+  try {
+    const response = await axiosClient.put(
+      `/api/product-post/extend/${selectedTransaction.id}`,
+      JSON.stringify(selectedMode),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log("Extend product response:", response);
+    fetchTransactions(userInformation.id, status);
+    
+    setModalVisible(false);
+  } catch (error) {
+    console.error("Error extending product:", error);
+  }
+};
+
+
+  const handleModalCancel = () => {
+    setModalVisible(false);
+  };
+
   return (
     <StyledPostApplyDetails>
       <Title level={3} style={{ textAlign: "center" }}>
-        Pending Transactions
+        {status === "Pending" ? "Pending Transactions" : "Expired Transactions"}
       </Title>
       <Divider />
 
       {transactions.length === 0 ? (
-        <Paragraph>No pending transactions found.</Paragraph>
+        <Paragraph>No {status.toLowerCase()} transactions found.</Paragraph>
       ) : (
         transactions.map((transaction) => (
           <div key={transaction.id}>
@@ -112,14 +164,9 @@ const PostApplyDetailsHistory = () => {
                     <strong>Date:</strong>{" "}
                     {new Date(transaction.expiredDate).toLocaleString()}
                   </Paragraph>
-                  {transaction.id && (
-                    <Button type="primary">
-                      <Link
-                        to={`/post-apply-details/${transaction.id}`}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                      >
-                        View Buyers
-                      </Link>
+                  {transaction.status === "Expired" && (
+                    <Button type="primary" onClick={() => handlePostModeClick(transaction)}>
+                      Post Mode
                     </Button>
                   )}
                 </div>
@@ -129,6 +176,39 @@ const PostApplyDetailsHistory = () => {
           </div>
         ))
       )}
+
+      <Modal
+        title="Select Post Mode"
+        visible={modalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+      >
+        <Select
+          style={{ width: "100%" }}
+          placeholder="Select a Post Mode"
+          onChange={value => setSelectedMode(value)}
+        >
+          {postModes.map(mode => (
+            <Option key={mode.id} value={mode.id}>{mode.type}</Option>
+          ))}
+        </Select>
+      </Modal>
+
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <Button
+          type={status === "Pending" ? "default" : "primary"}
+          onClick={() => handleStatusChange("Pending")}
+          style={{ marginRight: "10px" }}
+        >
+          Pending
+        </Button>
+        <Button
+          type={status === "Expired" ? "default" : "primary"}
+          onClick={() => handleStatusChange("Expired")}
+        >
+          Expired
+        </Button>
+      </div>
     </StyledPostApplyDetails>
   );
 };
